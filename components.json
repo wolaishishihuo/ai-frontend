@@ -5,9 +5,10 @@
   "tailwind": {
     "config": "",
     "css": "src/assets/css/main.css",
-    "baseColor": "neutral"
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
   },
-  "framework": "vite",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
