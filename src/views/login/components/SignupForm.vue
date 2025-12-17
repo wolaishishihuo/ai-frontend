@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -10,6 +11,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
@@ -19,48 +21,66 @@ import { useUserStore } from '@/stores/modules/user'
 const { setIsSignup, signup } = useUserStore()
 
 const form = reactive({
-  name: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
 })
 
-const errors = ref<{ name?: string, email?: string, password?: string, confirmPassword?: string }>({})
+const isLoading = ref(false)
+const errors = ref<{ username?: string, email?: string, password?: string, confirmPassword?: string }>({})
 
 function validate() {
   errors.value = {}
 
-  if (!form.name) {
-    errors.value.name = '请输入姓名'
+  if (!form.username) {
+    errors.value.username = 'please enter your username'
   }
 
   if (!form.email) {
-    errors.value.email = '请输入邮箱'
+    errors.value.email = 'please enter your email'
   }
   else if (!/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(form.email)) {
-    errors.value.email = '请输入有效的邮箱地址'
+    errors.value.email = 'please enter a valid email address'
   }
 
   if (!form.password) {
-    errors.value.password = '请输入密码'
+    errors.value.password = 'please enter your password'
   }
   else if (form.password.length < 4) {
-    errors.value.password = '密码至少4位'
+    errors.value.password = 'password must be at least 4 characters long'
   }
 
   if (!form.confirmPassword) {
-    errors.value.confirmPassword = '请输入确认密码'
+    errors.value.confirmPassword = 'please enter your confirm password'
   }
   else if (form.confirmPassword !== form.password) {
-    errors.value.confirmPassword = '密码不一致'
+    errors.value.confirmPassword = 'password does not match'
   }
 
   return Object.keys(errors.value).length === 0
 }
 
-function handleSubmit() {
-  if (validate()) {
-    signup()
+async function handleSubmit() {
+  if (!validate()) {
+    return
+  }
+
+  try {
+    isLoading.value = true
+    await signup({
+      username: form.username,
+      email: form.email,
+      password: form.password,
+    })
+    // 注册成功，跳转到首页或聊天页
+    // router.push('/chat')
+  }
+  catch (error: any) {
+    errors.value.email = error.message || 'registration failed, please check your input information'
+  }
+  finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -76,13 +96,21 @@ function handleSubmit() {
     <CardContent>
       <form @submit.prevent="handleSubmit">
         <FieldGroup>
-          <Field>
-            <FieldLabel for="name">
-              Full Name
+          <Field :data-invalid="!!errors.username">
+            <FieldLabel for="username">
+              Username
             </FieldLabel>
-            <Input id="name" v-model="form.name" type="text" placeholder="John Doe" required />
+            <Input
+              id="username"
+              v-model="form.username"
+              type="text"
+              placeholder="please enter your username"
+            />
+            <FieldError v-if="errors.username">
+              {{ errors.username }}
+            </FieldError>
           </Field>
-          <Field>
+          <Field :data-invalid="!!errors.email">
             <FieldLabel for="email">
               Email
             </FieldLabel>
@@ -91,34 +119,43 @@ function handleSubmit() {
               v-model="form.email"
               type="email"
               placeholder="m@example.com"
-              required
             />
+            <FieldError v-if="errors.email">
+              {{ errors.email }}
+            </FieldError>
             <FieldDescription>
               We'll use this to contact you. We will not share your email with
               anyone else.
             </FieldDescription>
           </Field>
-          <Field>
+          <Field :data-invalid="!!errors.password">
             <FieldLabel for="password">
               Password
             </FieldLabel>
-            <Input id="password" v-model="form.password" type="password" required />
-            <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+            <Input id="password" v-model="form.password" type="password" placeholder="please enter your password" />
+            <FieldError v-if="errors.password">
+              {{ errors.password }}
+            </FieldError>
+            <FieldDescription>Must be at least 4 characters long.</FieldDescription>
           </Field>
-          <Field>
+          <Field :data-invalid="!!errors.confirmPassword">
             <FieldLabel for="confirm-password">
               Confirm Password
             </FieldLabel>
-            <Input id="confirm-password" v-model="form.confirmPassword" type="password" required />
+            <Input id="confirm-password" v-model="form.confirmPassword" type="password" placeholder="please enter your confirm password" />
+            <FieldError v-if="errors.confirmPassword">
+              {{ errors.confirmPassword }}
+            </FieldError>
             <FieldDescription>Please confirm your password.</FieldDescription>
           </Field>
           <FieldGroup>
             <Field>
-              <Button type="submit">
-                Create Account
+              <Button type="submit" :disabled="isLoading">
+                {{ isLoading ? 'registering...' : 'Create Account' }}
               </Button>
-              <FieldDescription class="px-6 text-center" @click="setIsSignup(false)">
-                Already have an account? <a href="#">Sign in</a>
+              <FieldDescription class="px-6 text-center">
+                Already have an account?
+                <a href="#" @click.prevent="setIsSignup(false)">Sign in</a>
               </FieldDescription>
             </Field>
           </FieldGroup>

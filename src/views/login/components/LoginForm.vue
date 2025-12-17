@@ -27,35 +27,49 @@ const props = defineProps<{
 const { setIsSignup, signin } = useUserStore()
 
 const form = reactive({
-  email: '2430250298@qq.com',
-  password: '123456',
+  username: '',
+  password: '',
 })
 
-const errors = ref<{ email?: string, password?: string }>({})
+const isLoading = ref(false)
+const errors = ref<{ username?: string, password?: string }>({})
 
 function validate() {
   errors.value = {}
 
-  if (!form.email) {
-    errors.value.email = '请输入邮箱'
-  }
-  else if (!/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(form.email)) {
-    errors.value.email = '请输入有效的邮箱地址'
+  if (!form.username) {
+    errors.value.username = '请输入用户名'
   }
 
   if (!form.password) {
     errors.value.password = '请输入密码'
   }
-  else if (form.password.length < 6) {
-    errors.value.password = '密码至少6位'
+  else if (form.password.length < 4) {
+    errors.value.password = '密码至少4位'
   }
 
   return Object.keys(errors.value).length === 0
 }
 
-function handleSubmit() {
-  if (validate()) {
-    signin()
+async function handleSubmit() {
+  if (!validate()) {
+    return
+  }
+
+  try {
+    isLoading.value = true
+    await signin({
+      username: form.username,
+      password: form.password,
+    })
+    // 登录成功，跳转到首页或聊天页
+    // router.push('/chat')
+  }
+  catch (error: any) {
+    errors.value.password = error.message || '登录失败，请检查用户名和密码'
+  }
+  finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -72,18 +86,18 @@ function handleSubmit() {
       <CardContent>
         <form @submit.prevent="handleSubmit">
           <FieldGroup>
-            <Field :data-invalid="!!errors.email">
-              <FieldLabel for="email">
-                Email
+            <Field :data-invalid="!!errors.username">
+              <FieldLabel for="username">
+                Username
               </FieldLabel>
               <Input
-                id="email"
-                v-model="form.email"
-                type="email"
-                placeholder="m@example.com"
+                id="username"
+                v-model="form.username"
+                type="text"
+                placeholder="please enter your username"
               />
-              <FieldError v-if="errors.email">
-                {{ errors.email }}
+              <FieldError v-if="errors.username">
+                {{ errors.username }}
               </FieldError>
             </Field>
             <Field :data-invalid="!!errors.password">
@@ -98,14 +112,14 @@ function handleSubmit() {
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" v-model="form.password" type="password" />
+              <Input id="password" v-model="form.password" type="password" placeholder="please enter your password" />
               <FieldError v-if="errors.password">
                 {{ errors.password }}
               </FieldError>
             </Field>
             <Field>
-              <Button type="submit">
-                Login
+              <Button type="submit" :disabled="isLoading">
+                {{ isLoading ? '登录中...' : 'Login' }}
               </Button>
               <FieldDescription class="text-center">
                 Don't have an account?

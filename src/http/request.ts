@@ -85,6 +85,13 @@ export function put<T>(url: string, data?: any, config?: RequestConfig): Promise
 }
 
 /**
+ * PATCH 请求
+ */
+export function patch<T>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  return instance.patch(url, data, config)
+}
+
+/**
  * DELETE 请求
  */
 export function del<T>(url: string, config?: RequestConfig): Promise<T> {
