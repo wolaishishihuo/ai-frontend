@@ -38,3 +38,5 @@ Thumbs.db
 # Auto-generated type declarations
 src/types/auto-imports.d.ts
 src/types/components.d.ts
+
+.kiro/
