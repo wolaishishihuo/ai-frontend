@@ -18,12 +18,13 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { useUserStore } from '@/stores/modules/user'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
 }>()
 
-const emits = defineEmits(['toSignUp'])
+const { setIsSignup, signin } = useUserStore()
 
 const form = reactive({
   email: '',
@@ -54,8 +55,7 @@ function validate() {
 
 function handleSubmit() {
   if (validate()) {
-
-    // TODO: 调用登录接口
+    signin()
   }
 }
 </script>
@@ -70,7 +70,7 @@ function handleSubmit() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form novalidate @submit.prevent="handleSubmit">
+        <form @submit.prevent="handleSubmit">
           <FieldGroup>
             <Field :data-invalid="!!errors.email">
               <FieldLabel for="email">
@@ -109,7 +109,7 @@ function handleSubmit() {
               </Button>
               <FieldDescription class="text-center">
                 Don't have an account?
-                <a href="#" @click="emits('toSignUp')">
+                <a href="#" @click="setIsSignup(true)">
                   Sign up
                 </a>
               </FieldDescription>

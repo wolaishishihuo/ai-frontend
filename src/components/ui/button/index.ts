@@ -8,7 +8,7 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
@@ -26,6 +26,7 @@ export const buttonVariants = cva(
         'icon-sm': 'size-9',
         'icon-lg': 'size-11',
       },
+
     },
     defaultVariants: {
       variant: 'default',
