@@ -4,7 +4,7 @@ import axios from 'axios'
 import router from '@/router'
 import { HttpStatus, HttpStatusMessage } from './types'
 
-const TOKEN_KEY = 'auth_token'
+export const TOKEN_KEY = 'auth_token'
 
 /**
  * 创建 axios 实例

@@ -27,8 +27,8 @@ const props = defineProps<{
 const { setIsSignup, signin } = useUserStore()
 
 const form = reactive({
-  email: '',
-  password: '',
+  email: '2430250298@qq.com',
+  password: '123456',
 })
 
 const errors = ref<{ email?: string, password?: string }>({})
