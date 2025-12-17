@@ -12,10 +12,11 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "pinia": "^2.3.0",
-    "reka-ui": "^2.1.1",
+    "reka-ui": "^2.6.1",
     "tailwind-merge": "^2.6.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
@@ -40,5 +41,6 @@
   },
   "lint-staged": {
     "*.{js,ts,vue}": "eslint --fix"
-  }
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }
