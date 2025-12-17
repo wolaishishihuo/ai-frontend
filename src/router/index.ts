@@ -10,9 +10,14 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    name: 'home',
-    redirect: '/login',
+    redirect: '/chat',
   },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: () => import('@/views/chat/index.vue'),
+  },
+
 ]
 
 const router = createRouter({
