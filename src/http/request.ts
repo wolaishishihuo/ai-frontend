@@ -1,6 +1,8 @@
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import type { ApiError, ApiResponse, RequestConfig } from './types'
 import axios from 'axios'
+import router from '@/router'
+import { HttpStatus, HttpStatusMessage } from './types'
 
 const TOKEN_KEY = 'auth_token'
 
@@ -38,25 +40,23 @@ instance.interceptors.request.use(
  */
 instance.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    return response.data.data
+    const res = response.data
+    if (res.code === HttpStatus.OK) {
+      return res.data
+    }
+    return Promise.reject(new Error(res.message))
   },
   (error) => {
     const status = error.response?.status
+    const message = error.response?.data?.message || HttpStatusMessage[status] || '网络错误'
     const apiError: ApiError = {
       code: status || 0,
-      message: error.message || 'Unknown error',
+      message,
     }
 
-    if (status === 401) {
+    if (status === HttpStatus.UNAUTHORIZED) {
       localStorage.removeItem(TOKEN_KEY)
-      window.location.href = '/login'
-      apiError.message = 'Unauthorized'
-    }
-    else if (status === 403) {
-      apiError.message = 'Permission denied'
-    }
-    else if (status >= 500) {
-      apiError.message = 'Server error'
+      router.replace('/login')
     }
 
     return Promise.reject(apiError)
