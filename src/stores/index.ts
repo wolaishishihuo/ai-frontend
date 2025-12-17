@@ -1,15 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-export const useAppStore = defineStore('app', () => {
-  const count = ref(0)
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
-  function increment() {
-    count.value++
-  }
-
-  return {
-    count,
-    increment,
-  }
-})
+export default pinia
