@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
+import { reactive, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
@@ -20,6 +22,42 @@ import { cn } from '@/lib/utils'
 const props = defineProps<{
   class?: HTMLAttributes['class']
 }>()
+
+const emits = defineEmits(['toSignUp'])
+
+const form = reactive({
+  email: '',
+  password: '',
+})
+
+const errors = ref<{ email?: string, password?: string }>({})
+
+function validate() {
+  errors.value = {}
+
+  if (!form.email) {
+    errors.value.email = '请输入邮箱'
+  }
+  else if (!/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(form.email)) {
+    errors.value.email = '请输入有效的邮箱地址'
+  }
+
+  if (!form.password) {
+    errors.value.password = '请输入密码'
+  }
+  else if (form.password.length < 6) {
+    errors.value.password = '密码至少6位'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
+
+function handleSubmit() {
+  if (validate()) {
+
+    // TODO: 调用登录接口
+  }
+}
 </script>
 
 <template>
@@ -32,20 +70,23 @@ const props = defineProps<{
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form novalidate @submit.prevent="handleSubmit">
           <FieldGroup>
-            <Field>
+            <Field :data-invalid="!!errors.email">
               <FieldLabel for="email">
                 Email
               </FieldLabel>
               <Input
                 id="email"
+                v-model="form.email"
                 type="email"
                 placeholder="m@example.com"
-                required
               />
+              <FieldError v-if="errors.email">
+                {{ errors.email }}
+              </FieldError>
             </Field>
-            <Field>
+            <Field :data-invalid="!!errors.password">
               <div class="flex items-center">
                 <FieldLabel for="password">
                   Password
@@ -57,18 +98,18 @@ const props = defineProps<{
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" v-model="form.password" type="password" />
+              <FieldError v-if="errors.password">
+                {{ errors.password }}
+              </FieldError>
             </Field>
             <Field>
               <Button type="submit">
                 Login
               </Button>
-              <Button variant="outline" type="button">
-                Login with Google
-              </Button>
               <FieldDescription class="text-center">
                 Don't have an account?
-                <a href="#">
+                <a href="#" @click="emits('toSignUp')">
                   Sign up
                 </a>
               </FieldDescription>
