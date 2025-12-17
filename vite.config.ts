@@ -20,6 +20,11 @@ export default defineConfig({
       dirs: ['src/components'],
     }),
   ],
+  server: {
+    port: 3000,
+    open: true,
+    host: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
