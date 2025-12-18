@@ -12,7 +12,13 @@ const conversationList = ref<any[]>([
   }
 ]);
 
+const router = useRouter();
+
 const userInfo = computed(() => useUserStore().userInfo);
+
+function handleNewConversation() {
+  router.push({ name: 'chat-content' });
+}
 </script>
 
 <template>
@@ -33,7 +39,7 @@ const userInfo = computed(() => useUserStore().userInfo);
     <SidebarFooter class="space-y-10">
       <SidebarMenu>
         <SidebarMenuItem>
-          <Button class="w-full">
+          <Button class="w-full" @click="handleNewConversation">
             <Plus class="size-4!" />
             New Conversation
           </Button>
