@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { useDark } from '@vueuse/core';
+import { Moon, Sun } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+
+const isDark = useDark();
+
+function toggleDark() {
+  isDark.value = !isDark.value;
+}
 </script>
 
 <template>
@@ -17,6 +25,10 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
         DeepSeek AI
       </h1>
       <div class="ml-auto flex items-center gap-2">
+        <Button variant="ghost" size="icon" @click="toggleDark">
+          <Sun v-if="isDark" class="size-4!" />
+          <Moon v-else class="size-4!" />
+        </Button>
         <Button variant="ghost" as-child size="sm" class="hidden sm:flex">
           <a
             href="https://github.com/wolaishishihuo/ai-frontend"
