@@ -13,6 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ai-sdk/vue": "^2.0.115",
     "@vueuse/core": "^14.1.0",
     "ai": "^5.0.115",
     "axios": "^1.13.2",
@@ -23,9 +24,11 @@
     "pinia": "^3.0.0",
     "pinia-plugin-persistedstate": "^4.7.1",
     "reka-ui": "^2.6.1",
+    "streamdown-vue": "^1.0.29",
     "tailwind-merge": "^3.4.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue-stick-to-bottom": "^0.1.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.2",

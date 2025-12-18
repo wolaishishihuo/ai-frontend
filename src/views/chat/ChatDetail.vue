@@ -1,49 +1,33 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import ChatPromptInput from './components/ChatPromptInput.vue';
 
-const route = useRoute();
-const conversationId = computed(() => route.params.id as string);
+const messages = ref<any[]>([]);
 
-// 这里可以根据 conversationId 获取对话详情
-// 例如：从 store 或 API 获取
+function handleMessagesUpdated(newMessages: any[]) {
+  messages.value = newMessages;
+}
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col p-6">
-    <div class="w-full max-w-3xl mx-auto space-y-4">
-      <div class="space-y-2">
-        <h1 class="text-2xl font-bold">
-          对话详情
-        </h1>
-        <p class="text-muted-foreground">
-          对话 ID: {{ conversationId }}
-        </p>
-      </div>
-
-      <!-- 消息列表区域 -->
-      <div class="space-y-4">
-        <div class="rounded-lg border p-4">
-          <p class="text-sm text-muted-foreground">
-            这里显示对话的消息列表
-          </p>
-        </div>
-      </div>
-
-      <!-- 输入区域 -->
-      <div class="fixed bottom-0 left-0 right-0 border-t bg-background p-4">
-        <div class="mx-auto max-w-3xl">
-          <div class="flex gap-2">
-            <input
-              type="text"
-              placeholder="输入消息..."
-              class="flex-1 rounded-md border px-4 py-2"
-            >
-            <button class="rounded-md bg-primary px-4 py-2 text-primary-foreground">
-              发送
-            </button>
-          </div>
-        </div>
-      </div>
+  <div class="relative w-1/2 mx-auto h-full flex flex-col overflow-hidden">
+    <div class="flex-1 min-h-0 overflow-hidden p-6 pb-0">
+      <Conversation class="size-full overflow-y-auto">
+        <ConversationContent>
+          <Message v-for="message in messages" :key="message.id" :from="message.role">
+            <MessageContent>
+              <template v-for="(part, i) in message.parts" :key="`${message.id}-${i}`">
+                <MessageResponse v-if="part.type === 'text'">
+                  {{ part.text }}
+                </MessageResponse>
+              </template>
+            </MessageContent>
+          </Message>
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+    </div>
+    <div class="shrink-0 p-6 pt-0">
+      <ChatPromptInput @messages-updated="handleMessagesUpdated" />
     </div>
   </div>
 </template>

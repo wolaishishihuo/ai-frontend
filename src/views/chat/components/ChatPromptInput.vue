@@ -1,10 +1,41 @@
 <script setup lang="ts">
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input/';
+import { Chat } from '@ai-sdk/vue';
+import { DefaultChatTransport } from 'ai';
 import { CheckIcon, GlobeIcon } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { useUserStore } from '@/stores/modules/user';
 
-const SUBMITTING_TIMEOUT = 200;
-const STREAMING_TIMEOUT = 2000;
+interface Emits {
+  (e: 'messagesUpdated', messages: any[]): void
+}
+
+const emit = defineEmits<Emits>();
+
+const userStore = useUserStore();
+
+// 创建 Chat 实例
+const chat = new Chat({
+  transport: new DefaultChatTransport({
+    api: `${import.meta.env.VITE_API_BASE_URL}/chat`,
+    headers: () => {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (userStore.token) {
+        headers.Authorization = `Bearer ${userStore.token}`;
+      }
+      return headers;
+    },
+    body: () => ({
+      // 可以根据需要添加额外的 body 参数
+    })
+  })
+});
+
+// 监听 messages 变化，通知父组件
+watch(chat.messages, (newMessages) => {
+  emit('messagesUpdated', newMessages);
+}, { deep: true, immediate: true });
 
 const models = [
   {
@@ -25,29 +56,32 @@ const models = [
 
 const modelId = ref<string>(models[0].id);
 const modelSelectorOpen = ref(false);
-const status = ref<'submitted' | 'streaming' | 'ready' | 'error'>('ready');
 const selectedModelData = computed(() => models.find(m => m.id === modelId.value));
 
 function handleSubmit(message: PromptInputMessage) {
-  const hasText = !!message.text;
-  const hasAttachments = message.files?.length > 0;
+  const hasText = Boolean(message.text);
+  const hasAttachments = Boolean(message.files?.length);
 
-  if (!hasText && !hasAttachments) {
+  if (!(hasText || hasAttachments)) {
     return;
   }
 
-  status.value = 'submitted';
-
-  console.log('Submitting message:', message);
-
-  setTimeout(() => {
-    status.value = 'streaming';
-  }, SUBMITTING_TIMEOUT);
-
-  setTimeout(() => {
-    status.value = 'ready';
-  }, STREAMING_TIMEOUT);
+  // 发送消息
+  chat.sendMessage({
+    text: message.text || 'Sent with attachments',
+    files: message.files
+  });
 }
+
+// 暴露 messages 和 status 给父组件
+defineExpose({
+  messages: chat.messages,
+  status: chat.status
+});
+
+onMounted(() => {
+  // 组件挂载时可以加载历史消息等
+});
 </script>
 
 <template>
@@ -137,7 +171,7 @@ function handleSubmit(message: PromptInputMessage) {
             </ModelSelector>
           </PromptInputTools>
 
-          <PromptInputSubmit :status="status" />
+          <PromptInputSubmit :status="chat.status" />
         </PromptInputFooter>
       </PromptInput>
     </PromptInputProvider>
