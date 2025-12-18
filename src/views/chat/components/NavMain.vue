@@ -1,31 +1,35 @@
 <script setup lang="ts">
-import type { Component } from 'vue';
-
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
-} from '@/components/ui/sidebar';
-
-interface NavItem {
+interface Conversation {
+  id: string
   title: string
-  icon?: Component
+  messages: any[]
 }
 
 defineProps<{
-  items: NavItem[]
+  items: Conversation[]
+  selectedId?: string | null
 }>();
+
+const emit = defineEmits<{
+  select: [id: string]
+}>();
+
+function handleClick(id: string) {
+  emit('select', id);
+}
 </script>
 
 <template>
   <SidebarGroup>
-    <SidebarGroupContent class="flex flex-col gap-2">
+    <SidebarGroupContent class="flex flex-col gap-5">
       <SidebarMenu>
-        <SidebarMenuItem v-for="item in items" :key="item.title">
-          <SidebarMenuButton :tooltip="item.title">
-            <component :is="item.icon" v-if="item.icon" />
+        <SidebarMenuItem v-for="item in items" :key="item.id">
+          <SidebarMenuButton
+            :tooltip="item.title"
+            :is-active="selectedId === item.id"
+            class="h-10"
+            @click="handleClick(item.id)"
+          >
             <span class="text-base">{{ item.title }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>

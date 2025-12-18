@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useDark } from '@vueuse/core';
 import { Moon, Sun } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const isDark = useDark();
 

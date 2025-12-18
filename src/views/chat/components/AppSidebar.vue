@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import { GalleryVerticalEnd } from 'lucide-vue-next';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
-} from '@/components/ui/sidebar';
+import { GalleryVerticalEnd, Plus } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/modules/user';
 import NavMain from './NavMain.vue';
 import NavUser from './NavUser.vue';
 
-const data = {
-  navMain: [
-    {
-      title: 'Chat'
-    }
-  ]
+const conversationList = ref<any[]>([
+  {
+    id: '1',
+    title: 'Conversation 1',
+    messages: []
+  }
+]);
 
-};
+const selectedConversationId = ref<string | null>('1');
 
 const userInfo = computed(() => useUserStore().userInfo);
+
+function handleSelectConversation(id: string) {
+  selectedConversationId.value = id;
+}
 </script>
 
 <template>
@@ -30,22 +26,29 @@ const userInfo = computed(() => useUserStore().userInfo);
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            as-child
-            class="data-[slot=sidebar-menu-button]:p-1.5!"
-          >
-            <a href="#">
-              <GalleryVerticalEnd class="size-5!" />
-              <span class="text-base font-semibold">AI Chat</span>
-            </a>
-          </SidebarMenuButton>
+          <div class="data-[slot=sidebar-menu-button]:p-1.5! flex items-center gap-2">
+            <GalleryVerticalEnd class="size-5!" />
+            <span class="text-base font-semibold">AI Chat</span>
+          </div>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
+      <NavMain
+        :items="conversationList"
+        :selected-id="selectedConversationId"
+        @select="handleSelectConversation"
+      />
     </SidebarContent>
-    <SidebarFooter>
+    <SidebarFooter class="space-y-10">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <Button class="w-full">
+            <Plus class="size-4!" />
+            New Conversation
+          </Button>
+        </SidebarMenuItem>
+      </SidebarMenu>
       <NavUser v-if="userInfo" :user="userInfo" />
     </SidebarFooter>
   </Sidebar>
