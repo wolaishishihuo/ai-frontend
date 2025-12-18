@@ -1,73 +1,73 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { reactive, ref } from 'vue'
-import { Button } from '@/components/ui/button'
+import type { HTMLAttributes } from 'vue';
+import { reactive, ref } from 'vue';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+  CardTitle
+} from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { useUserStore } from '@/stores/modules/user'
+  FieldLabel
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { useUserStore } from '@/stores/modules/user';
 import {
   type FormErrors,
   type LoginFormData,
   validateEmail,
   validateLoginForm,
-  validatePassword,
-} from './validate'
+  validatePassword
+} from './validate';
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
-}>()
+}>();
 
-const router = useRouter()
-const { setIsSignup, signin } = useUserStore()
+const router = useRouter();
+const { setIsSignup, signin } = useUserStore();
 
 const form = reactive<LoginFormData>({
   email: '',
-  password: '',
-})
+  password: ''
+});
 
-const isLoading = ref(false)
-const errors = ref<FormErrors>({})
+const isLoading = ref(false);
+const errors = ref<FormErrors>({});
 
 /**
  * 校验所有字段
  */
 function validate() {
-  return validateLoginForm(form, errors.value)
+  return validateLoginForm(form, errors.value);
 }
 
 async function handleSubmit() {
   if (!validate()) {
-    return
+    return;
   }
 
   try {
-    isLoading.value = true
+    isLoading.value = true;
     await signin({
       email: form.email,
-      password: form.password,
-    })
+      password: form.password
+    });
     // 登录成功，跳转到首页或聊天页
-    router.push('/chat')
+    router.push('/chat');
   }
   catch (error: any) {
-    errors.value.password = error.message || '登录失败，请检查邮箱和密码'
+    errors.value.password = error.message || '登录失败，请检查邮箱和密码';
   }
   finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>

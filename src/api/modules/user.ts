@@ -1,6 +1,6 @@
-import type { GetUserListParams, LoginParams, LoginResponse, RegisterParams, UpdateUserParams, User } from '../types/user'
-import type { PaginatedData } from '@/http/types'
-import { del, get, patch, post } from '@/http'
+import type { GetUserListParams, LoginParams, LoginResponse, RegisterParams, UpdateUserParams, User } from '../types/user';
+import type { PaginatedData } from '@/http/types';
+import { del, get, patch, post } from '@/http';
 
 /**
  * 用户模块 API
@@ -12,7 +12,7 @@ export const userApi = {
    * @returns 登录响应（包含 token）
    */
   login(data: LoginParams): Promise<LoginResponse> {
-    return post<LoginResponse>('/api/user/login', data, { skipAuth: true })
+    return post<LoginResponse>('/api/user/login', data, { skipAuth: true });
   },
 
   /**
@@ -21,7 +21,7 @@ export const userApi = {
    * @returns 用户信息
    */
   register(data: RegisterParams): Promise<User> {
-    return post<User>('/api/user/register', data, { skipAuth: true })
+    return post<User>('/api/user/register', data, { skipAuth: true });
   },
 
   /**
@@ -30,7 +30,7 @@ export const userApi = {
    * @returns 用户列表和分页信息
    */
   getUserList(params?: GetUserListParams): Promise<PaginatedData<User>> {
-    return get<PaginatedData<User>>('/api/user/all', { params })
+    return get<PaginatedData<User>>('/api/user/all', { params });
   },
 
   /**
@@ -39,7 +39,7 @@ export const userApi = {
    * @returns 用户信息数组
    */
   getUserByEmail(email: string): Promise<User[]> {
-    return get<User[]>(`/api/user/${email}`)
+    return get<User[]>(`/api/user/${email}`);
   },
 
   /**
@@ -49,7 +49,7 @@ export const userApi = {
    * @returns 更新后的用户信息
    */
   updateUser(id: string, data: UpdateUserParams): Promise<User> {
-    return patch<User>(`/api/user/${id}`, data)
+    return patch<User>(`/api/user/${id}`, data);
   },
 
   /**
@@ -58,6 +58,6 @@ export const userApi = {
    * @returns 删除的用户信息
    */
   deleteUser(id: string): Promise<User> {
-    return del<User>(`/api/user/${id}`)
-  },
-}
+    return del<User>(`/api/user/${id}`);
+  }
+};

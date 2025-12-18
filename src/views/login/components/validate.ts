@@ -35,14 +35,14 @@ export interface FormErrors {
  */
 export function validateUsername(
   username: string,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
   if (!username) {
-    errors.username = 'please enter your username'
-    return false
+    errors.username = 'please enter your username';
+    return false;
   }
-  delete errors.username
-  return true
+  delete errors.username;
+  return true;
 }
 
 /**
@@ -50,18 +50,18 @@ export function validateUsername(
  */
 export function validateEmail(
   email: string,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
   if (!email) {
-    errors.email = 'please enter your email'
-    return false
+    errors.email = 'please enter your email';
+    return false;
   }
   if (!/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(email)) {
-    errors.email = 'please enter a valid email address'
-    return false
+    errors.email = 'please enter a valid email address';
+    return false;
   }
-  delete errors.email
-  return true
+  delete errors.email;
+  return true;
 }
 
 /**
@@ -69,18 +69,18 @@ export function validateEmail(
  */
 export function validatePassword(
   password: string,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
   if (!password) {
-    errors.password = 'please enter your password'
-    return false
+    errors.password = 'please enter your password';
+    return false;
   }
   if (password.length < 4) {
-    errors.password = 'password must be at least 4 characters long'
-    return false
+    errors.password = 'password must be at least 4 characters long';
+    return false;
   }
-  delete errors.password
-  return true
+  delete errors.password;
+  return true;
 }
 
 /**
@@ -89,18 +89,18 @@ export function validatePassword(
 export function validateConfirmPassword(
   confirmPassword: string,
   password: string,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
   if (!confirmPassword) {
-    errors.confirmPassword = 'please enter your confirm password'
-    return false
+    errors.confirmPassword = 'please enter your confirm password';
+    return false;
   }
   if (confirmPassword !== password) {
-    errors.confirmPassword = 'password does not match'
-    return false
+    errors.confirmPassword = 'password does not match';
+    return false;
   }
-  delete errors.confirmPassword
-  return true
+  delete errors.confirmPassword;
+  return true;
 }
 
 /**
@@ -108,12 +108,12 @@ export function validateConfirmPassword(
  */
 export function validateLoginForm(
   form: LoginFormData,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
-  const emailValid = validateEmail(form.email, errors)
-  const passwordValid = validatePassword(form.password, errors)
+  const emailValid = validateEmail(form.email, errors);
+  const passwordValid = validatePassword(form.password, errors);
 
-  return emailValid && passwordValid
+  return emailValid && passwordValid;
 }
 
 /**
@@ -121,16 +121,16 @@ export function validateLoginForm(
  */
 export function validateSignupForm(
   form: SignupFormData,
-  errors: FormErrors,
+  errors: FormErrors
 ): boolean {
-  const usernameValid = validateUsername(form.username, errors)
-  const emailValid = validateEmail(form.email, errors)
-  const passwordValid = validatePassword(form.password, errors)
+  const usernameValid = validateUsername(form.username, errors);
+  const emailValid = validateEmail(form.email, errors);
+  const passwordValid = validatePassword(form.password, errors);
   const confirmPasswordValid = validateConfirmPassword(
     form.confirmPassword || '',
     form.password,
-    errors,
-  )
+    errors
+  );
 
-  return usernameValid && emailValid && passwordValid && confirmPasswordValid
+  return usernameValid && emailValid && passwordValid && confirmPasswordValid;
 }

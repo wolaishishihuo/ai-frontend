@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig } from 'axios'
+import type { AxiosRequestConfig } from 'axios';
 
 /**
  * HTTP 状态码常量
@@ -9,10 +9,10 @@ export const HttpStatus = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-} as const
+  INTERNAL_SERVER_ERROR: 500
+} as const;
 
-export type HttpStatusCode = typeof HttpStatus[keyof typeof HttpStatus]
+export type HttpStatusCode = typeof HttpStatus[keyof typeof HttpStatus];
 
 /**
  * 状态码描述映射
@@ -23,8 +23,8 @@ export const HttpStatusMessage: Record<number, string> = {
   [HttpStatus.UNAUTHORIZED]: '未授权（未登录或 token 失效）',
   [HttpStatus.FORBIDDEN]: '禁止访问',
   [HttpStatus.NOT_FOUND]: '资源不存在',
-  [HttpStatus.INTERNAL_SERVER_ERROR]: '服务器内部错误',
-}
+  [HttpStatus.INTERNAL_SERVER_ERROR]: '服务器内部错误'
+};
 
 /**
  * 标准 API 响应结构

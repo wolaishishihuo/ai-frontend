@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { Button } from '@/components/ui/button'
+import { reactive, ref } from 'vue';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+  CardTitle
+} from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { useUserStore } from '@/stores/modules/user'
+  FieldLabel
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { useUserStore } from '@/stores/modules/user';
 import {
   type FormErrors,
   type SignupFormData,
@@ -24,48 +24,48 @@ import {
   validateEmail,
   validatePassword,
   validateSignupForm,
-  validateUsername,
-} from './validate'
+  validateUsername
+} from './validate';
 
-const { setIsSignup, signup } = useUserStore()
+const { setIsSignup, signup } = useUserStore();
 
 const form = reactive<SignupFormData>({
   username: '',
   email: '',
   password: '',
-  confirmPassword: '',
-})
+  confirmPassword: ''
+});
 
-const isLoading = ref(false)
-const errors = ref<FormErrors>({})
+const isLoading = ref(false);
+const errors = ref<FormErrors>({});
 
 /**
  * 校验所有字段
  */
 function validate() {
-  return validateSignupForm(form, errors.value)
+  return validateSignupForm(form, errors.value);
 }
 
 async function handleSubmit() {
   if (!validate()) {
-    return
+    return;
   }
 
   try {
-    isLoading.value = true
+    isLoading.value = true;
     await signup({
       username: form.username,
       email: form.email,
-      password: form.password,
-    })
+      password: form.password
+    });
     // 注册成功，跳转到首页或聊天页
     // router.push('/chat')
   }
   catch (error: any) {
-    errors.value.email = error.message || 'registration failed, please check your input information'
+    errors.value.email = error.message || 'registration failed, please check your input information';
   }
   finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/modules/user'
-import LoginForm from '@/views/login/components/LoginForm.vue'
-import SignupForm from '@/views/login/components/SignupForm.vue'
+import { useUserStore } from '@/stores/modules/user';
+import LoginForm from '@/views/login/components/LoginForm.vue';
+import SignupForm from '@/views/login/components/SignupForm.vue';
 
-const isSignup = computed(() => useUserStore().isSignup)
+const isSignup = computed(() => useUserStore().isSignup);
 </script>
 
 <template>

@@ -1,1 +1,1 @@
-export const USER_STORE_KEY = 'user-store'
+export const USER_STORE_KEY = 'user-store';

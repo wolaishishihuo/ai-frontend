@@ -1,10 +1,15 @@
-import antfu from '@antfu/eslint-config'
+import antfu from '@antfu/eslint-config';
 
 export default antfu({
   vue: true,
   typescript: true,
-
+  stylistic: {
+    semicolons: 'always',
+    trailingComma: 'none'
+  },
   rules: {
     'no-console': 'off',
-  },
-})
+    '@stylistic/semi': ['error', 'always'],
+    '@stylistic/comma-dangle': ['error', 'never']
+  }
+});
