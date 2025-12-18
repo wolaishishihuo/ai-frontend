@@ -1,10 +1,8 @@
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import type { ApiError, ApiResponse, RequestConfig } from './types'
 import axios from 'axios'
-import router from '@/router'
+import { useUserStore } from '@/stores/modules/user'
 import { HttpStatus, HttpStatusMessage } from './types'
-
-export const TOKEN_KEY = 'auth_token'
 
 /**
  * 创建 axios 实例
@@ -23,9 +21,9 @@ const instance: AxiosInstance = axios.create({
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig & { skipAuth?: boolean }) => {
     if (!config.skipAuth) {
-      const token = localStorage.getItem(TOKEN_KEY)
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+      const userStore = useUserStore()
+      if (userStore.token) {
+        config.headers.Authorization = `Bearer ${userStore.token}`
       }
     }
     return config
@@ -55,8 +53,8 @@ instance.interceptors.response.use(
     }
 
     if (status === HttpStatus.UNAUTHORIZED) {
-      localStorage.removeItem(TOKEN_KEY)
-      router.replace('/login')
+      const userStore = useUserStore()
+      userStore.logout()
     }
 
     return Promise.reject(apiError)

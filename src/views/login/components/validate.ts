@@ -6,7 +6,7 @@
  * 登录表单数据类型
  */
 export interface LoginFormData {
-  username: string
+  email: string
   password: string
 }
 
@@ -110,10 +110,10 @@ export function validateLoginForm(
   form: LoginFormData,
   errors: FormErrors,
 ): boolean {
-  const usernameValid = validateUsername(form.username, errors)
+  const emailValid = validateEmail(form.email, errors)
   const passwordValid = validatePassword(form.password, errors)
 
-  return usernameValid && passwordValid
+  return emailValid && passwordValid
 }
 
 /**

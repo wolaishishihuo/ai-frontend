@@ -4,7 +4,7 @@ import type { AxiosRequestConfig } from 'axios'
  * HTTP 状态码常量
  */
 export const HttpStatus = {
-  OK: 200,
+  OK: 1,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,

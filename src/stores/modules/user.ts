@@ -1,6 +1,6 @@
 import type { LoginParams, RegisterParams, User } from '@/api/types/user'
 import { userApi } from '@/api'
-import { TOKEN_KEY } from '@/http/request'
+import { USER_STORE_KEY } from '@/constant'
 import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
@@ -8,6 +8,11 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = ref<User | null>(null)
 
   const isSignup = ref(false)
+
+  /**
+   * 检查是否已登录
+   */
+  const isLoggedIn = computed(() => !!token.value)
 
   const setIsSignup = (value: boolean) => {
     isSignup.value = value
@@ -20,10 +25,9 @@ export const useUserStore = defineStore('user', () => {
   const signin = async (params: LoginParams) => {
     const response = await userApi.login(params)
     token.value = response.token
-    localStorage.setItem(TOKEN_KEY, response.token)
 
     // 登录成功后获取用户信息
-    const users = await userApi.getUserByUsername(params.username)
+    const users = await userApi.getUserByEmail(params.email)
     if (users.length > 0) {
       userInfo.value = users[0]
     }
@@ -39,24 +43,42 @@ export const useUserStore = defineStore('user', () => {
 
     // 注册成功后自动登录
     const response = await userApi.login({
-      username: params.username,
+      email: params.email,
       password: params.password,
     })
     token.value = response.token
-    localStorage.setItem(TOKEN_KEY, response.token)
+  }
+
+  const resetUserStore = () => {
+    token.value = ''
+    userInfo.value = null
   }
 
   /**
    * 用户登出
    */
-  const logout = async () => {
-    localStorage.removeItem(TOKEN_KEY)
-    token.value = ''
-    userInfo.value = null
+  const logout = () => {
+    resetUserStore()
     router.replace('/login')
   }
 
-  return { isSignup, token, userInfo, setIsSignup, signin, signup, logout }
+  return {
+    // state
+    token,
+    userInfo,
+    isSignup,
+    // getters
+    isLoggedIn,
+    // actions
+    setIsSignup,
+    signin,
+    signup,
+    logout,
+    resetUserStore,
+  }
 }, {
-  persist: true,
+  persist: {
+    key: USER_STORE_KEY,
+    pick: ['token', 'userInfo'],
+  },
 })

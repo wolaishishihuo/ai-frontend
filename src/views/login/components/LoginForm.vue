@@ -22,19 +22,20 @@ import { useUserStore } from '@/stores/modules/user'
 import {
   type FormErrors,
   type LoginFormData,
+  validateEmail,
   validateLoginForm,
   validatePassword,
-  validateUsername,
 } from './validate'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
 }>()
 
+const router = useRouter()
 const { setIsSignup, signin } = useUserStore()
 
 const form = reactive<LoginFormData>({
-  username: '',
+  email: '',
   password: '',
 })
 
@@ -56,14 +57,14 @@ async function handleSubmit() {
   try {
     isLoading.value = true
     await signin({
-      username: form.username,
+      email: form.email,
       password: form.password,
     })
     // 登录成功，跳转到首页或聊天页
-    // router.push('/chat')
+    router.push('/chat')
   }
   catch (error: any) {
-    errors.value.password = error.message || '登录失败，请检查用户名和密码'
+    errors.value.password = error.message || '登录失败，请检查邮箱和密码'
   }
   finally {
     isLoading.value = false
@@ -83,19 +84,19 @@ async function handleSubmit() {
       <CardContent>
         <form @submit.prevent="handleSubmit">
           <FieldGroup>
-            <Field :data-invalid="!!errors.username">
-              <FieldLabel for="username">
-                Username
+            <Field :data-invalid="!!errors.email">
+              <FieldLabel for="email">
+                Email
               </FieldLabel>
               <Input
-                id="username"
-                v-model="form.username"
-                type="text"
-                placeholder="please enter your username"
-                @blur="() => validateUsername(form.username, errors)"
+                id="email"
+                v-model="form.email"
+                type="email"
+                placeholder="please enter your email"
+                @blur="() => validateEmail(form.email, errors)"
               />
-              <FieldError v-if="errors.username">
-                {{ errors.username }}
+              <FieldError v-if="errors.email">
+                {{ errors.email }}
               </FieldError>
             </Field>
             <Field :data-invalid="!!errors.password">

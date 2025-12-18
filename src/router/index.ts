@@ -27,17 +27,15 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   const userStore = useUserStore()
-  const hasToken = !!userStore.token
+  const isLoggedIn = userStore.isLoggedIn
 
   if (to.path === '/login') {
-    if (hasToken) {
-      userStore.token = ''
-      userStore.userInfo = null
-      localStorage.removeItem('auth_token')
+    if (isLoggedIn) {
+      userStore.resetUserStore()
     }
     next()
   }
-  else if (!hasToken) {
+  else if (!isLoggedIn) {
     next({ path: '/login', replace: true })
   }
   else {

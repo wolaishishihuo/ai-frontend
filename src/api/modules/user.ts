@@ -34,12 +34,12 @@ export const userApi = {
   },
 
   /**
-   * 根据用户名查询用户
-   * @param username 用户名
+   * 根据邮箱查询用户
+   * @param email 邮箱
    * @returns 用户信息数组
    */
-  getUserByUsername(username: string): Promise<User[]> {
-    return get<User[]>(`/api/user/${username}`)
+  getUserByEmail(email: string): Promise<User[]> {
+    return get<User[]>(`/api/user/${email}`)
   },
 
   /**
