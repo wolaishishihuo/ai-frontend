@@ -15,7 +15,28 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/chat',
     name: 'chat',
-    component: () => import('@/views/chat/index.vue')
+    component: () => import('@/views/chat/index.vue'),
+    redirect: '/chat-content',
+    children: [
+      {
+        path: '',
+        name: 'chat-content',
+        component: () => import('@/views/chat/ChatContent.vue'),
+        meta: {
+          title: '聊天'
+        }
+      },
+      {
+        path: ':id',
+        name: 'chat-detail',
+        component: () => import('@/views/chat/ChatDetail.vue'),
+        props: true,
+        meta: {
+          title: '对话详情',
+          requiresAuth: true
+        }
+      }
+    ]
   }
 
 ];

@@ -7,15 +7,16 @@ interface Conversation {
 
 defineProps<{
   items: Conversation[]
-  selectedId?: string | null
 }>();
 
-const emit = defineEmits<{
-  select: [id: string]
-}>();
+const route = useRoute();
+const router = useRouter();
 
+const selectedId = computed(() => {
+  return route.params.id as string | null;
+});
 function handleClick(id: string) {
-  emit('select', id);
+  router.push({ name: 'chat-detail', params: { id } });
 }
 </script>
 

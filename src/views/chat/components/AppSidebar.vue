@@ -12,13 +12,7 @@ const conversationList = ref<any[]>([
   }
 ]);
 
-const selectedConversationId = ref<string | null>('1');
-
 const userInfo = computed(() => useUserStore().userInfo);
-
-function handleSelectConversation(id: string) {
-  selectedConversationId.value = id;
-}
 </script>
 
 <template>
@@ -34,11 +28,7 @@ function handleSelectConversation(id: string) {
       </SidebarMenu>
     </SidebarHeader>
     <SidebarContent>
-      <NavMain
-        :items="conversationList"
-        :selected-id="selectedConversationId"
-        @select="handleSelectConversation"
-      />
+      <NavMain :items="conversationList" />
     </SidebarContent>
     <SidebarFooter class="space-y-10">
       <SidebarMenu>
