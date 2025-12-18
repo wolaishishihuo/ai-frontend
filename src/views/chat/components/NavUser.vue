@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { User } from '@/api';
+
 import {
+  Bell,
   CreditCard,
+  EllipsisVertical,
   LogOut,
   UserCircle
 } from 'lucide-vue-next';
-
 import {
   Avatar,
   AvatarFallback,
@@ -25,18 +28,18 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '@/components/ui/sidebar';
-
-interface User {
-  name: string
-  email: string
-  avatar: string
-}
+import { useUserStore } from '@/stores/modules/user';
 
 defineProps<{
   user: User
 }>();
 
 const { isMobile } = useSidebar();
+
+function handleLogout() {
+  console.log('handleLogout');
+  useUserStore().logout();
+}
 </script>
 
 <template>
@@ -49,18 +52,18 @@ const { isMobile } = useSidebar();
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="h-8 w-8 rounded-lg grayscale">
-              <AvatarImage :src="user.avatar" :alt="user.name" />
+              <AvatarImage :src="user.avatar" :alt="user.username" />
               <AvatarFallback class="rounded-lg">
                 CN
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
+              <span class="truncate font-medium">{{ user.username }}</span>
               <span class="text-muted-foreground truncate text-xs">
                 {{ user.email }}
               </span>
             </div>
-            <DotsVertical class="ml-auto size-4" />
+            <EllipsisVertical class="ml-auto size-4" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -72,13 +75,13 @@ const { isMobile } = useSidebar();
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarImage :src="user.avatar" :alt="user.name" />
+                <AvatarImage :src="user.avatar" :alt="user.username" />
                 <AvatarFallback class="rounded-lg">
                   CN
                 </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-medium">{{ user.name }}</span>
+                <span class="truncate font-medium">{{ user.username }}</span>
                 <span class="text-muted-foreground truncate text-xs">
                   {{ user.email }}
                 </span>
@@ -96,12 +99,12 @@ const { isMobile } = useSidebar();
               Billing
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Notification class="size-4!" />
+              <Bell class="size-4!" />
               Notifications
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @click="handleLogout">
             <LogOut class="size-4!" />
             Log out
           </DropdownMenuItem>

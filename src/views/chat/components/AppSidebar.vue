@@ -9,20 +9,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { useUserStore } from '@/stores/modules/user';
 import NavMain from './NavMain.vue';
 import NavUser from './NavUser.vue';
 
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg'
-  },
   navMain: [
-
+    {
+      title: 'Chat'
+    }
   ]
 
 };
+
+const userInfo = computed(() => useUserStore().userInfo);
 </script>
 
 <template>
@@ -46,7 +46,7 @@ const data = {
       <NavMain :items="data.navMain" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser v-if="userInfo" :user="userInfo" />
     </SidebarFooter>
   </Sidebar>
 </template>

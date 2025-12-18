@@ -7,6 +7,7 @@ import {
   SidebarProvider
 } from '@/components/ui/sidebar';
 import AppSidebar from './components/AppSidebar.vue';
+import SiteHeader from './components/SiteHeader.vue';
 </script>
 
 <template>
