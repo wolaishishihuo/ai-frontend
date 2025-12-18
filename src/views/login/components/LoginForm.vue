@@ -19,6 +19,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/stores/modules/user'
+import {
+  type FormErrors,
+  type LoginFormData,
+  validateLoginForm,
+  validatePassword,
+  validateUsername,
+} from './validate'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
@@ -26,29 +33,19 @@ const props = defineProps<{
 
 const { setIsSignup, signin } = useUserStore()
 
-const form = reactive({
+const form = reactive<LoginFormData>({
   username: '',
   password: '',
 })
 
 const isLoading = ref(false)
-const errors = ref<{ username?: string, password?: string }>({})
+const errors = ref<FormErrors>({})
 
+/**
+ * 校验所有字段
+ */
 function validate() {
-  errors.value = {}
-
-  if (!form.username) {
-    errors.value.username = '请输入用户名'
-  }
-
-  if (!form.password) {
-    errors.value.password = '请输入密码'
-  }
-  else if (form.password.length < 4) {
-    errors.value.password = '密码至少4位'
-  }
-
-  return Object.keys(errors.value).length === 0
+  return validateLoginForm(form, errors.value)
 }
 
 async function handleSubmit() {
@@ -95,6 +92,7 @@ async function handleSubmit() {
                 v-model="form.username"
                 type="text"
                 placeholder="please enter your username"
+                @blur="() => validateUsername(form.username, errors)"
               />
               <FieldError v-if="errors.username">
                 {{ errors.username }}
@@ -112,7 +110,13 @@ async function handleSubmit() {
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" v-model="form.password" type="password" placeholder="please enter your password" />
+              <Input
+                id="password"
+                v-model="form.password"
+                type="password"
+                placeholder="please enter your password"
+                @blur="() => validatePassword(form.password, errors)"
+              />
               <FieldError v-if="errors.password">
                 {{ errors.password }}
               </FieldError>

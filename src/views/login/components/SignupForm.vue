@@ -17,10 +17,19 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useUserStore } from '@/stores/modules/user'
+import {
+  type FormErrors,
+  type SignupFormData,
+  validateConfirmPassword,
+  validateEmail,
+  validatePassword,
+  validateSignupForm,
+  validateUsername,
+} from './validate'
 
 const { setIsSignup, signup } = useUserStore()
 
-const form = reactive({
+const form = reactive<SignupFormData>({
   username: '',
   email: '',
   password: '',
@@ -28,37 +37,13 @@ const form = reactive({
 })
 
 const isLoading = ref(false)
-const errors = ref<{ username?: string, email?: string, password?: string, confirmPassword?: string }>({})
+const errors = ref<FormErrors>({})
 
+/**
+ * 校验所有字段
+ */
 function validate() {
-  errors.value = {}
-
-  if (!form.username) {
-    errors.value.username = 'please enter your username'
-  }
-
-  if (!form.email) {
-    errors.value.email = 'please enter your email'
-  }
-  else if (!/^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(form.email)) {
-    errors.value.email = 'please enter a valid email address'
-  }
-
-  if (!form.password) {
-    errors.value.password = 'please enter your password'
-  }
-  else if (form.password.length < 4) {
-    errors.value.password = 'password must be at least 4 characters long'
-  }
-
-  if (!form.confirmPassword) {
-    errors.value.confirmPassword = 'please enter your confirm password'
-  }
-  else if (form.confirmPassword !== form.password) {
-    errors.value.confirmPassword = 'password does not match'
-  }
-
-  return Object.keys(errors.value).length === 0
+  return validateSignupForm(form, errors.value)
 }
 
 async function handleSubmit() {
@@ -104,7 +89,8 @@ async function handleSubmit() {
               id="username"
               v-model="form.username"
               type="text"
-              placeholder="please enter your username"
+              placeholder="John Doe"
+              @blur="() => validateUsername(form.username, errors)"
             />
             <FieldError v-if="errors.username">
               {{ errors.username }}
@@ -119,6 +105,7 @@ async function handleSubmit() {
               v-model="form.email"
               type="email"
               placeholder="m@example.com"
+              @blur="() => validateEmail(form.email, errors)"
             />
             <FieldError v-if="errors.email">
               {{ errors.email }}
@@ -132,7 +119,18 @@ async function handleSubmit() {
             <FieldLabel for="password">
               Password
             </FieldLabel>
-            <Input id="password" v-model="form.password" type="password" placeholder="please enter your password" />
+            <Input
+              id="password"
+              v-model="form.password"
+              type="password"
+              placeholder="please enter your password"
+              @blur="() => {
+                validatePassword(form.password, errors)
+                if (form.confirmPassword) {
+                  validateConfirmPassword(form.confirmPassword, form.password, errors)
+                }
+              }"
+            />
             <FieldError v-if="errors.password">
               {{ errors.password }}
             </FieldError>
@@ -142,7 +140,13 @@ async function handleSubmit() {
             <FieldLabel for="confirm-password">
               Confirm Password
             </FieldLabel>
-            <Input id="confirm-password" v-model="form.confirmPassword" type="password" placeholder="please enter your confirm password" />
+            <Input
+              id="confirm-password"
+              v-model="form.confirmPassword"
+              type="password"
+              placeholder="please enter your confirm password"
+              @blur="() => validateConfirmPassword(form.confirmPassword || '', form.password, errors)"
+            />
             <FieldError v-if="errors.confirmPassword">
               {{ errors.confirmPassword }}
             </FieldError>
