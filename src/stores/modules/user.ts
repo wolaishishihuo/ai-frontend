@@ -1,4 +1,5 @@
 import type { LoginParams, RegisterParams, User } from '@/api/types/user';
+import { toast } from 'vue-sonner';
 import { userApi } from '@/api';
 import { USER_STORE_KEY } from '@/constant';
 import router from '@/router';
@@ -19,7 +20,7 @@ export const useUserStore = defineStore('user', () => {
   };
 
   const getUserInfo = async () => {
-    const user = await userApi.getUserByEmail(userInfo.value.email);
+    const user = await userApi.getCurrentUser();
     userInfo.value = user;
   };
 
@@ -30,7 +31,6 @@ export const useUserStore = defineStore('user', () => {
   const signin = async (params: LoginParams) => {
     const response = await userApi.login(params);
     token.value = response.token;
-    userInfo.value.email = params.email;
   };
 
   /**
@@ -38,15 +38,9 @@ export const useUserStore = defineStore('user', () => {
    * @param params 注册参数
    */
   const signup = async (params: RegisterParams) => {
-    const user = await userApi.register(params);
-    userInfo.value = user;
-
-    // 注册成功后自动登录
-    const response = await userApi.login({
-      email: params.email,
-      password: params.password
-    });
-    token.value = response.token;
+    await userApi.register(params);
+    toast.success('注册成功,请登录');
+    setIsSignup(false);
   };
 
   const resetUserStore = () => {

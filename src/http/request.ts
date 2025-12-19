@@ -1,9 +1,9 @@
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { ApiError, ApiResponse, RequestConfig } from './types';
 import axios from 'axios';
+import { toast } from 'vue-sonner';
 import { useUserStore } from '@/stores/modules/user';
 import { HttpStatus, HttpStatusMessage } from './types';
-
 /**
  * 创建 axios 实例
  */
@@ -51,6 +51,8 @@ instance.interceptors.response.use(
       code: status || 0,
       message
     };
+    toast.error(message);
+
     if (status === HttpStatus.UNAUTHORIZED) {
       const userStore = useUserStore();
       userStore.logout();

@@ -20,8 +20,8 @@ export const userApi = {
    * @param data 注册参数
    * @returns 用户信息
    */
-  register(data: RegisterParams): Promise<User> {
-    return post<User>('/api/user/register', data, { skipAuth: true });
+  register(data: RegisterParams): Promise<void> {
+    return post<void>('/api/user/register', data, { skipAuth: true });
   },
 
   /**
@@ -40,6 +40,14 @@ export const userApi = {
    */
   getUserByEmail(email: string): Promise<User> {
     return get<User>(`/api/user/${encodeURIComponent(email)}`);
+  },
+
+  /**
+   * 获取当前登录用户信息
+   * @returns 当前登录用户信息
+   */
+  getCurrentUser(): Promise<User> {
+    return get<User>('/api/user/current');
   },
 
   /**
