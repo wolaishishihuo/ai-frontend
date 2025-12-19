@@ -13,10 +13,7 @@ const isPageReady = ref(false);
 
 onMounted(async () => {
   await getUserInfo();
-  // 短暂延迟让动画更自然
-  setTimeout(() => {
-    isPageReady.value = true;
-  }, 100);
+  isPageReady.value = true;
 });
 </script>
 
