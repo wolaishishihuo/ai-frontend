@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ChatStatus } from 'ai';
-import type { PromptInputMessage } from '@/components/ai-elements/prompt-input/';
 import { Chat } from '@ai-sdk/vue';
 import { DefaultChatTransport } from 'ai';
 import { CheckIcon } from 'lucide-vue-next';
+import { type PromptInputMessage, usePromptInputProvider } from '@/components/ai-elements/prompt-input/';
 
 const models = [
   {
@@ -38,11 +38,37 @@ const chat = new Chat({
 const status = computed<ChatStatus>(() => chat.status);
 const messages = computed(() => chat.messages);
 
+const promptInput = usePromptInputProvider({
+  onSubmit: handleSubmit,
+  onError: handlePromptError
+});
+
+const hasPendingInput = computed(() => {
+  return Boolean(promptInput.textInput.value.trim()) || promptInput.files.value.length > 0;
+});
+
+const submitDisabled = computed(() => !hasPendingInput.value && !status.value);
+
+function handlePromptError(error: { code: string, message: string }) {
+  console.error(`Input error (${error.code})`, error.message);
+}
+
+function handleStopStream() {
+  chat.stop();
+}
+
 function handleSubmit(message: PromptInputMessage) {
   const hasText = Boolean(message.text);
   const hasAttachments = Boolean(message.files?.length);
 
   if (!(hasText || hasAttachments)) {
+    return;
+  }
+
+  if (
+    status.value === 'streaming'
+    || status.value === 'submitted'
+  ) {
     return;
   }
 
@@ -64,7 +90,8 @@ function handleRegenerate() {
 defineExpose({
   messages,
   status,
-  handleRegenerate
+  handleRegenerate,
+  handleStopStream // 暂停流
 });
 </script>
 
@@ -157,7 +184,11 @@ defineExpose({
             </ModelSelector>
           </PromptInputTools>
 
-          <PromptInputSubmit :status="status" />
+          <PromptInputSubmit
+            :status="status"
+            :disabled="submitDisabled"
+            @stop="handleStopStream"
+          />
         </PromptInputFooter>
       </PromptInput>
     </PromptInputProvider>

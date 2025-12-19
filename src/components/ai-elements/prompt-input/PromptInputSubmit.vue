@@ -14,12 +14,17 @@ interface Props extends /* @vue-ignore */ InputGroupButtonProps {
   status?: ChatStatus
   variant?: InputGroupButtonProps['variant']
   size?: InputGroupButtonProps['size']
+  onStop?: () => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   size: 'icon-sm'
 });
+
+const emit = defineEmits<{
+  stop: []
+}>();
 
 const icon = computed(() => {
   if (props.status === 'submitted') {
@@ -42,6 +47,13 @@ const iconClass = computed(() => {
 });
 
 const { status, size, variant, class: _, ...restProps } = props;
+
+function handleClick() {
+  // 如果正在流式传输，则暂停；否则提交
+  if (props.status === 'streaming' || props.status === 'submitted') {
+    emit('stop');
+  }
+}
 </script>
 
 <template>
@@ -50,8 +62,9 @@ const { status, size, variant, class: _, ...restProps } = props;
     :class="cn(props.class)"
     :size="size"
     :variant="variant"
-    type="submit"
+    :type="props.status === 'streaming' || props.status === 'submitted' ? 'button' : 'submit'"
     v-bind="restProps"
+    @click="handleClick"
   >
     <slot>
       <component :is="icon" :class="iconClass" />
