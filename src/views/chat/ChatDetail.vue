@@ -1,33 +1,54 @@
 <script setup lang="ts">
 import ChatPromptInput from './components/ChatPromptInput.vue';
 
-const messages = ref<any[]>([]);
-
-function handleMessagesUpdated(newMessages: any[]) {
-  messages.value = newMessages;
-}
+const chatPromptInputRef = ref<InstanceType<typeof ChatPromptInput>>();
+const messages = computed(() => chatPromptInputRef.value?.messages);
 </script>
 
 <template>
-  <div class="relative w-1/2 mx-auto h-full flex flex-col overflow-hidden">
-    <div class="flex-1 min-h-0 overflow-hidden p-6 pb-0">
-      <Conversation class="size-full overflow-y-auto">
+  <div class="flex h-full flex-col">
+    <div class="flex-1 overflow-y-auto h-0">
+      <Conversation>
         <ConversationContent>
-          <Message v-for="message in messages" :key="message.id" :from="message.role">
-            <MessageContent>
-              <template v-for="(part, i) in message.parts" :key="`${message.id}-${i}`">
-                <MessageResponse v-if="part.type === 'text'">
-                  {{ part.text }}
-                </MessageResponse>
-              </template>
-            </MessageContent>
-          </Message>
+          <div
+            v-for="message in messages"
+            :key="message.id"
+          >
+            <template
+              v-for="(part, partIndex) in message.parts"
+              :key="`${message.id}-${partIndex}`"
+            >
+              <Message
+                v-if="part.type === 'text'"
+                :from="message.role"
+              >
+                <div>
+                  <MessageContent>
+                    <MessageResponse :content="part.text" />
+                  </MessageContent>
+
+                  <!-- <MessageActions v-if="shouldShowActions(message, partIndex)">
+                    <MessageAction
+                      label="Retry"
+                      @click="handleRegenerate"
+                    >
+                      <RefreshCcwIcon class="size-3" />
+                    </MessageAction>
+                    <MessageAction
+                      label="Copy"
+                      @click="copyToClipboard(part.text)"
+                    >
+                      <CopyIcon class="size-3" />
+                    </MessageAction>
+                  </MessageActions> -->
+                </div>
+              </Message>
+            </template>
+          </div>
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
     </div>
-    <div class="shrink-0 p-6 pt-0">
-      <ChatPromptInput @messages-updated="handleMessagesUpdated" />
-    </div>
+    <ChatPromptInput ref="chatPromptInputRef" class="mt-4" />
   </div>
 </template>

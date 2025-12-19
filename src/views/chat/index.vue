@@ -19,6 +19,7 @@ onMounted(async () => {
 
 <template>
   <SidebarProvider
+    class="h-svh! min-h-0!"
     :style=" {
       '--sidebar-width': 'calc(var(--spacing) * 72)',
       '--header-height': 'calc(var(--spacing) * 12)',
@@ -27,14 +28,12 @@ onMounted(async () => {
     <Transition name="slide-right">
       <AppSidebar v-show="isPageReady" variant="inset" />
     </Transition>
-    <SidebarInset>
+    <SidebarInset class="overflow-hidden">
       <Transition name="fade-up">
         <div v-show="isPageReady" class="flex h-full flex-col">
           <SiteHeader />
-          <div class="flex flex-1 flex-col">
-            <div class="@container/main flex flex-1 flex-col gap-2">
-              <RouterView />
-            </div>
+          <div class="min-h-0 flex-1">
+            <RouterView />
           </div>
         </div>
       </Transition>
