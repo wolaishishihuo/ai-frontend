@@ -59,93 +59,95 @@ defineExpose({
 </script>
 
 <template>
-  <PromptInputProvider
-    @submit="handleSubmit"
-  >
-    <PromptInput
-      multiple
-      global-drop class="w-full"
+  <div>
+    <PromptInputProvider
+      @submit="handleSubmit"
     >
-      <PromptInputAttachments>
-        <template #default="{ file }">
-          <PromptInputAttachment :file="file" />
-        </template>
-      </PromptInputAttachments>
+      <PromptInput
+        multiple
+        global-drop class="w-full"
+      >
+        <PromptInputAttachments>
+          <template #default="{ file }">
+            <PromptInputAttachment :file="file" />
+          </template>
+        </PromptInputAttachments>
 
-      <PromptInputBody>
-        <PromptInputTextarea />
-      </PromptInputBody>
+        <PromptInputBody>
+          <PromptInputTextarea />
+        </PromptInputBody>
 
-      <PromptInputFooter>
-        <PromptInputTools>
-          <PromptInputActionMenu>
-            <PromptInputActionMenuTrigger />
-            <PromptInputActionMenuContent>
-              <PromptInputActionAddAttachments />
-            </PromptInputActionMenuContent>
-          </PromptInputActionMenu>
+        <PromptInputFooter>
+          <PromptInputTools>
+            <PromptInputActionMenu>
+              <PromptInputActionMenuTrigger />
+              <PromptInputActionMenuContent>
+                <PromptInputActionAddAttachments />
+              </PromptInputActionMenuContent>
+            </PromptInputActionMenu>
 
-          <PromptInputSpeechButton />
+            <PromptInputSpeechButton />
 
-          <PromptInputButton>
-            <GlobeIcon :size="16" />
-            <span>Search</span>
-          </PromptInputButton>
+            <PromptInputButton>
+              <GlobeIcon :size="16" />
+              <span>Search</span>
+            </PromptInputButton>
 
-          <ModelSelector v-model:open="modelSelectorOpen">
-            <ModelSelectorTrigger as-child>
-              <PromptInputButton>
-                <ModelSelectorLogo
-                  v-if="selectedModelData?.chefSlug"
-                  :provider="selectedModelData.chefSlug"
-                />
-                <ModelSelectorName v-if="selectedModelData?.name">
-                  {{ selectedModelData.name }}
-                </ModelSelectorName>
-              </PromptInputButton>
-            </ModelSelectorTrigger>
+            <ModelSelector v-model:open="modelSelectorOpen">
+              <ModelSelectorTrigger as-child>
+                <PromptInputButton>
+                  <ModelSelectorLogo
+                    v-if="selectedModelData?.chefSlug"
+                    :provider="selectedModelData.chefSlug"
+                  />
+                  <ModelSelectorName v-if="selectedModelData?.name">
+                    {{ selectedModelData.name }}
+                  </ModelSelectorName>
+                </PromptInputButton>
+              </ModelSelectorTrigger>
 
-            <ModelSelectorContent>
-              <ModelSelectorInput placeholder="Search models..." />
-              <ModelSelectorList>
-                <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+              <ModelSelectorContent>
+                <ModelSelectorInput placeholder="Search models..." />
+                <ModelSelectorList>
+                  <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
 
-                <ModelSelectorGroup
-                  v-for="chef in ['DeepSeek']"
-                  :key="chef"
-                  :heading="chef"
-                >
-                  <ModelSelectorItem
-                    v-for="m in models.filter((item) => item.chef === chef)"
-                    :key="m.id"
-                    :value="m.id"
-                    @select="() => {
-                      modelId = m.id;
-                      modelSelectorOpen = false;
-                    }"
+                  <ModelSelectorGroup
+                    v-for="chef in ['DeepSeek']"
+                    :key="chef"
+                    :heading="chef"
                   >
-                    <ModelSelectorLogo :provider="m.chefSlug" />
-                    <ModelSelectorName>{{ m.name }}</ModelSelectorName>
+                    <ModelSelectorItem
+                      v-for="m in models.filter((item) => item.chef === chef)"
+                      :key="m.id"
+                      :value="m.id"
+                      @select="() => {
+                        modelId = m.id;
+                        modelSelectorOpen = false;
+                      }"
+                    >
+                      <ModelSelectorLogo :provider="m.chefSlug" />
+                      <ModelSelectorName>{{ m.name }}</ModelSelectorName>
 
-                    <ModelSelectorLogoGroup>
-                      <ModelSelectorLogo
-                        v-for="provider in m.providers"
-                        :key="provider"
-                        :provider="provider"
-                      />
-                    </ModelSelectorLogoGroup>
+                      <ModelSelectorLogoGroup>
+                        <ModelSelectorLogo
+                          v-for="provider in m.providers"
+                          :key="provider"
+                          :provider="provider"
+                        />
+                      </ModelSelectorLogoGroup>
 
-                    <CheckIcon v-if="modelId === m.id" class="ml-auto size-4" />
-                    <div v-else class="ml-auto size-4" />
-                  </ModelSelectorItem>
-                </ModelSelectorGroup>
-              </ModelSelectorList>
-            </ModelSelectorContent>
-          </ModelSelector>
-        </PromptInputTools>
+                      <CheckIcon v-if="modelId === m.id" class="ml-auto size-4" />
+                      <div v-else class="ml-auto size-4" />
+                    </ModelSelectorItem>
+                  </ModelSelectorGroup>
+                </ModelSelectorList>
+              </ModelSelectorContent>
+            </ModelSelector>
+          </PromptInputTools>
 
-        <PromptInputSubmit :status="status" />
-      </PromptInputFooter>
-    </PromptInput>
-  </PromptInputProvider>
+          <PromptInputSubmit :status="status" />
+        </PromptInputFooter>
+      </PromptInput>
+    </PromptInputProvider>
+  </div>
 </template>

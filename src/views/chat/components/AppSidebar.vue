@@ -28,7 +28,7 @@ function handleNewConversation() {
         <SidebarMenuItem>
           <div class="data-[slot=sidebar-menu-button]:p-1.5! flex items-center gap-2">
             <GalleryVerticalEnd class="size-5!" />
-            <span class="text-base font-semibold">AI Chat</span>
+            <span class="text-base font-semibold">AIWeb Chat</span>
           </div>
         </SidebarMenuItem>
       </SidebarMenu>

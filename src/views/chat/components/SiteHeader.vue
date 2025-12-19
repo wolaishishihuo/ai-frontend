@@ -20,6 +20,7 @@ function toggleDark() {
       <h1 class="text-base font-medium">
         <!-- TODO: AI 详细信息 -->
         <!-- DeepSeek AI -->
+        Welcome to AIWeb Chat.
       </h1>
       <div class="ml-auto flex items-center gap-2">
         <Button variant="ghost" size="icon" @click="toggleDark">

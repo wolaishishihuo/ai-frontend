@@ -6,7 +6,7 @@ const messages = computed(() => chatPromptInputRef.value?.messages);
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
+  <div class="flex h-full flex-col mx-auto max-w-5xl">
     <div class="flex-1 overflow-y-auto h-0">
       <Conversation>
         <ConversationContent>
@@ -49,6 +49,6 @@ const messages = computed(() => chatPromptInputRef.value?.messages);
         <ConversationScrollButton />
       </Conversation>
     </div>
-    <ChatPromptInput ref="chatPromptInputRef" class="mt-4" />
+    <ChatPromptInput ref="chatPromptInputRef" class="my-4" />
   </div>
 </template>
