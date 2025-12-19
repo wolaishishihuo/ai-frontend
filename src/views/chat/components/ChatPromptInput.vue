@@ -3,7 +3,7 @@ import type { ChatStatus } from 'ai';
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input/';
 import { Chat } from '@ai-sdk/vue';
 import { DefaultChatTransport } from 'ai';
-import { CheckIcon, GlobeIcon } from 'lucide-vue-next';
+import { CheckIcon } from 'lucide-vue-next';
 
 const models = [
   {
@@ -53,8 +53,18 @@ function handleSubmit(message: PromptInputMessage) {
   });
 }
 
+function handleRegenerate() {
+  chat.regenerate({
+    body: {
+      modelType: selectedModelData.value?.id
+    }
+  });
+}
+
 defineExpose({
-  messages
+  messages,
+  status,
+  handleRegenerate
 });
 </script>
 
@@ -86,12 +96,14 @@ defineExpose({
               </PromptInputActionMenuContent>
             </PromptInputActionMenu>
 
-            <PromptInputSpeechButton />
+            <!-- <PromptInputSpeechButton /> -->
 
+            <!-- 搜索按钮 -->
+            <!--
             <PromptInputButton>
               <GlobeIcon :size="16" />
               <span>Search</span>
-            </PromptInputButton>
+            </PromptInputButton> -->
 
             <ModelSelector v-model:open="modelSelectorOpen">
               <ModelSelectorTrigger as-child>
