@@ -38,8 +38,8 @@ export const userApi = {
    * @param email 邮箱
    * @returns 用户信息数组
    */
-  getUserByEmail(email: string): Promise<User[]> {
-    return get<User[]>(`/api/user/${email}`);
+  getUserByEmail(email: string): Promise<User> {
+    return get<User>(`/api/user/${encodeURIComponent(email)}`);
   },
 
   /**

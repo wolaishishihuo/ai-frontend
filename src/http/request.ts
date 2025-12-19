@@ -51,7 +51,6 @@ instance.interceptors.response.use(
       code: status || 0,
       message
     };
-
     if (status === HttpStatus.UNAUTHORIZED) {
       const userStore = useUserStore();
       userStore.logout();

@@ -5,7 +5,7 @@ import router from '@/router';
 
 export const useUserStore = defineStore('user', () => {
   const token = ref('');
-  const userInfo = ref<User | null>(null);
+  const userInfo = ref<User>({} as User);
 
   const isSignup = ref(false);
 
@@ -18,6 +18,11 @@ export const useUserStore = defineStore('user', () => {
     isSignup.value = value;
   };
 
+  const getUserInfo = async () => {
+    const user = await userApi.getUserByEmail(userInfo.value.email);
+    userInfo.value = user;
+  };
+
   /**
    * 用户登录
    * @param params 登录参数
@@ -25,12 +30,7 @@ export const useUserStore = defineStore('user', () => {
   const signin = async (params: LoginParams) => {
     const response = await userApi.login(params);
     token.value = response.token;
-
-    // 登录成功后获取用户信息
-    const users = await userApi.getUserByEmail(params.email);
-    if (users.length > 0) {
-      userInfo.value = users[0];
-    }
+    userInfo.value.email = params.email;
   };
 
   /**
@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
 
   const resetUserStore = () => {
     token.value = '';
-    userInfo.value = null;
+    userInfo.value = {} as User;
   };
 
   /**
@@ -74,7 +74,8 @@ export const useUserStore = defineStore('user', () => {
     signin,
     signup,
     logout,
-    resetUserStore
+    resetUserStore,
+    getUserInfo
   };
 }, {
   persist: {

@@ -1,13 +1,23 @@
-<script lang="ts">
-</script>
-
 <script setup lang="ts">
 import {
   SidebarInset,
   SidebarProvider
 } from '@/components/ui/sidebar';
+import { useUserStore } from '@/stores/modules/user';
 import AppSidebar from './components/AppSidebar.vue';
 import SiteHeader from './components/SiteHeader.vue';
+
+const { getUserInfo } = useUserStore();
+
+const isPageReady = ref(false);
+
+onMounted(async () => {
+  await getUserInfo();
+  // 短暂延迟让动画更自然
+  setTimeout(() => {
+    isPageReady.value = true;
+  }, 100);
+});
 </script>
 
 <template>
@@ -17,14 +27,55 @@ import SiteHeader from './components/SiteHeader.vue';
       '--header-height': 'calc(var(--spacing) * 12)',
     }"
   >
-    <AppSidebar variant="inset" />
+    <Transition name="slide-right">
+      <AppSidebar v-show="isPageReady" variant="inset" />
+    </Transition>
     <SidebarInset>
-      <SiteHeader />
-      <div class="flex flex-1 flex-col">
-        <div class="@container/main flex flex-1 flex-col gap-2">
-          <RouterView />
+      <Transition name="fade-up">
+        <div v-show="isPageReady" class="flex h-full flex-col">
+          <SiteHeader />
+          <div class="flex flex-1 flex-col">
+            <div class="@container/main flex flex-1 flex-col gap-2">
+              <RouterView />
+            </div>
+          </div>
         </div>
-      </div>
+      </Transition>
     </SidebarInset>
   </SidebarProvider>
 </template>
+
+<style scoped>
+/* 侧边栏从左滑入 */
+.slide-right-enter-active {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide-right-leave-active {
+  transition: all 0.3s ease-in;
+}
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+/* 主内容区淡入上移 */
+.fade-up-enter-active {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 0.15s;
+}
+.fade-up-leave-active {
+  transition: all 0.3s ease-in;
+}
+.fade-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+</style>
