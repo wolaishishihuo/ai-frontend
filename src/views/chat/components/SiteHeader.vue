@@ -31,7 +31,7 @@ const toggle = useToggle(isDark);
           <Sun v-if="isDark" class="size-4!" />
           <Moon v-else class="size-4!" />
         </Button>
-        <Button variant="ghost" as-child size="sm" class="hidden sm:flex">
+        <Button variant="ghost" as-child class="hidden sm:flex">
           <a
             href="https://github.com/wolaishishihuo/ai-frontend"
             rel="noopener noreferrer"
