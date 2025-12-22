@@ -85,7 +85,8 @@ async function handleSubmit(message: PromptInputMessage) {
 function handleRegenerate() {
   chatRef.value?.regenerate({
     body: {
-      modelType: selectedModel.value?.id
+      modelType: selectedModel.value?.id,
+      regenerate: true
     }
   });
 }
