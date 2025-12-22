@@ -54,7 +54,7 @@ function handleClickStats() {
           class="cursor-pointer hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex hover:text-foreground transition-colors"
           @click="handleClickStats"
         >
-          <Zap class="size-3.5" />
+          <Zap class="size-3.5 text-[#ffd700]" />
           <span>{{ formatTokens(conversationStats.totalTokens) }} tokens</span>
           <span class="text-muted-foreground/50">
             ({{ formatTokens(conversationStats.inputTokens) }} in / {{ formatTokens(conversationStats.outputTokens) }} out)
