@@ -128,7 +128,8 @@ defineExpose({
   messages,
   status,
   handleRegenerate,
-  handleStopStream
+  handleStopStream,
+  setTextInput: (text: string) => promptInput.setTextInput(text)
 });
 </script>
 
