@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import { type Conversation, conversationApi } from '@/api';
+import { storeToRefs } from 'pinia';
+import { useConversationStore } from '@/stores/modules/conversation';
 
 const route = useRoute();
 const router = useRouter();
 
-const conversations = ref<Conversation[]>([]);
+const conversationStore = useConversationStore();
+const { conversations } = storeToRefs(conversationStore);
 
-async function getConversations() {
-  const response = await conversationApi.getConversationList();
-  conversations.value = response.list;
-}
-
-onMounted(() => {
-  getConversations();
+onMounted(async () => {
+  await conversationStore.fetchConversationList();
 });
 
 const selectedId = computed(() => {
   return route.params.id as string | null;
 });
+
 function handleClick(id: string) {
   router.push({ name: 'chat-detail', params: { id } });
 }

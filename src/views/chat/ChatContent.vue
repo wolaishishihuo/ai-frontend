@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { useConversationStore } from '@/stores/modules/conversation';
 import { useUserStore } from '@/stores/modules/user';
 import ChatPromptInput from './components/ChatPromptInput.vue';
 
 const { userInfo } = useUserStore();
+const { clearCurrentConversation } = useConversationStore();
+
+onMounted(() => {
+  clearCurrentConversation();
+});
 </script>
 
 <template>

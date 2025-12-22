@@ -3,13 +3,32 @@ import type { UIMessage } from 'ai';
 import { useClipboard } from '@vueuse/core';
 import { CopyIcon, RefreshCcwIcon } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
+import { useConversationStore } from '@/stores/modules/conversation';
 import ChatPromptInput from './components/ChatPromptInput.vue';
 
 const { copy } = useClipboard();
+const route = useRoute();
+const { fetchConversationById, setCurrentConversationId, clearCurrentConversation } = useConversationStore();
 
 const chatPromptInputRef = ref<InstanceType<typeof ChatPromptInput>>();
 const messages = computed(() => chatPromptInputRef.value?.messages);
 const status = computed(() => chatPromptInputRef.value?.status);
+
+// 监听路由变化，加载会话详情
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId) {
+      setCurrentConversationId(newId as string);
+      await fetchConversationById(newId as string);
+    }
+  },
+  { immediate: true }
+);
+
+onUnmounted(() => {
+  clearCurrentConversation();
+});
 
 function shouldShowActions(message: UIMessage, partIndex: number) {
   return message.role === 'assistant' && partIndex === message.parts.length - 1;
@@ -29,8 +48,8 @@ function getSourceUrlParts(message: UIMessage) {
 }
 
 function isStreamingPart(msgIndex: number, partIndex: number) {
-  const lastMsg = messages!.value?.at(-1);
-  const msg = messages!.value?.[msgIndex];
+  const lastMsg = messages.value?.at(-1);
+  const msg = messages.value?.[msgIndex];
 
   if (!lastMsg || msg?.id !== lastMsg.id)
     return false;

@@ -1,42 +1,41 @@
 <script setup lang="ts">
-import type { ChatStatus } from 'ai';
+import type { ChatStatus, UIMessage } from 'ai';
 import { Chat } from '@ai-sdk/vue';
 import { DefaultChatTransport } from 'ai';
 import { CheckIcon } from 'lucide-vue-next';
 import { type PromptInputMessage, usePromptInputProvider } from '@/components/ai-elements/prompt-input/';
+import { CHAT_MODELS, useConversationStore } from '@/stores/modules/conversation';
 
-const models = [
-  {
-    id: 'deepseek-chat',
-    name: 'DeepSeek',
-    chef: 'DeepSeek',
-    chefSlug: 'deepseek',
-    providers: ['deepseek']
-  },
-  {
-    id: 'deepseek-reasoner',
-    name: 'DeepSeek R1',
-    chef: 'DeepSeek',
-    chefSlug: 'deepseek',
-    providers: ['deepseek']
-  }
-];
-const modelId = ref<string>(models[0].id);
+const route = useRoute();
+const router = useRouter();
+const conversationStore = useConversationStore();
+const { modelId, selectedModel, pendingMessage, currentConversation } = storeToRefs(conversationStore);
+
 const modelSelectorOpen = ref(false);
-const selectedModelData = computed(() => models.find(m => m.id === modelId.value));
+const conversationId = computed(() => route.params.id as string | undefined);
+
+// Chat 实例
+const chatRef = shallowRef<Chat<UIMessage> | null>(null);
 
 // 创建 Chat 实例
-const chat = new Chat({
-  transport: new DefaultChatTransport({
-    api: `${import.meta.env.VITE_API_BASE_URL}/api/chat/generate`,
-    body: () => ({
-      modelType: selectedModelData.value?.id
+function createChat(initialMessages?: UIMessage[]) {
+  chatRef.value = new Chat<UIMessage>({
+    messages: initialMessages,
+    transport: new DefaultChatTransport({
+      api: `${import.meta.env.VITE_API_BASE_URL}/api/chat/generate`,
+      body: () => ({
+        modelType: selectedModel.value?.id,
+        conversationId: conversationId.value
+      })
     })
-  })
-});
+  });
+}
 
-const status = computed<ChatStatus>(() => chat.status);
-const messages = computed(() => chat.messages);
+// 初始化
+createChat();
+
+const status = computed<ChatStatus>(() => chatRef.value?.status ?? 'ready');
+const messages = computed(() => chatRef.value?.messages ?? []);
 
 const promptInput = usePromptInputProvider({
   onSubmit: handleSubmit,
@@ -54,10 +53,10 @@ function handlePromptError(error: { code: string, message: string }) {
 }
 
 function handleStopStream() {
-  chat.stop();
+  chatRef.value?.stop();
 }
 
-function handleSubmit(message: PromptInputMessage) {
+async function handleSubmit(message: PromptInputMessage) {
   const hasText = Boolean(message.text);
   const hasAttachments = Boolean(message.files?.length);
 
@@ -65,45 +64,78 @@ function handleSubmit(message: PromptInputMessage) {
     return;
   }
 
-  if (
-    status.value === 'streaming'
-    || status.value === 'submitted'
-  ) {
+  // 如果没有当前会话，创建新会话
+  if (!conversationId.value) {
+    const newConversationId = await conversationStore.createConversation(message);
+    router.push({ name: 'chat-detail', params: { id: newConversationId } });
+    return;
+  }
+
+  if (status.value === 'streaming' || status.value === 'submitted') {
     return;
   }
 
   // 发送消息
-  chat.sendMessage({
+  chatRef.value?.sendMessage({
     text: hasText ? message.text : 'Sent with attachments',
     files: hasAttachments ? message.files : undefined
   });
 }
 
 function handleRegenerate() {
-  chat.regenerate({
+  chatRef.value?.regenerate({
     body: {
-      modelType: selectedModelData.value?.id
+      modelType: selectedModel.value?.id
     }
   });
 }
+
+function selectModel(id: string) {
+  conversationStore.setModel(id as typeof modelId.value);
+  modelSelectorOpen.value = false;
+}
+
+// 监听会话变化，加载历史消息
+watch(currentConversation, (conversation) => {
+  if (conversation?.messages?.length) {
+    // 转换消息格式
+    const historyMessages: UIMessage[] = conversation.messages.map(msg => ({
+      id: msg.id,
+      role: msg.role,
+      parts: msg.parts,
+      createdAt: new Date(msg.createdAt)
+    }));
+    // 重新创建 Chat 实例并加载历史消息
+    createChat(historyMessages);
+  }
+}, { immediate: true });
+
+// 处理 pendingMessage（从 ChatContent 创建会话后跳转过来）
+watch([conversationId, currentConversation], async ([newId, conversation]) => {
+  if (newId && pendingMessage.value && conversation) {
+    const message = conversationStore.consumePendingMessage();
+    if (message) {
+      await nextTick();
+      chatRef.value?.sendMessage({
+        text: message.text,
+        files: message.files?.length ? message.files : undefined
+      });
+    }
+  }
+}, { immediate: true });
 
 defineExpose({
   messages,
   status,
   handleRegenerate,
-  handleStopStream // 暂停流
+  handleStopStream
 });
 </script>
 
 <template>
   <div>
-    <PromptInputProvider
-      @submit="handleSubmit"
-    >
-      <PromptInput
-        multiple
-        global-drop class="w-full"
-      >
+    <PromptInputProvider @submit="handleSubmit">
+      <PromptInput multiple global-drop class="w-full">
         <PromptInputAttachments>
           <template #default="{ file }">
             <PromptInputAttachment :file="file" />
@@ -123,24 +155,15 @@ defineExpose({
               </PromptInputActionMenuContent>
             </PromptInputActionMenu>
 
-            <!-- <PromptInputSpeechButton /> -->
-
-            <!-- 搜索按钮 -->
-            <!--
-            <PromptInputButton>
-              <GlobeIcon :size="16" />
-              <span>Search</span>
-            </PromptInputButton> -->
-
             <ModelSelector v-model:open="modelSelectorOpen">
               <ModelSelectorTrigger as-child>
                 <PromptInputButton>
                   <ModelSelectorLogo
-                    v-if="selectedModelData?.chefSlug"
-                    :provider="selectedModelData.chefSlug"
+                    v-if="selectedModel?.chefSlug"
+                    :provider="selectedModel.chefSlug"
                   />
-                  <ModelSelectorName v-if="selectedModelData?.name">
-                    {{ selectedModelData.name }}
+                  <ModelSelectorName v-if="selectedModel?.name">
+                    {{ selectedModel.name }}
                   </ModelSelectorName>
                 </PromptInputButton>
               </ModelSelectorTrigger>
@@ -156,13 +179,10 @@ defineExpose({
                     :heading="chef"
                   >
                     <ModelSelectorItem
-                      v-for="m in models.filter((item) => item.chef === chef)"
+                      v-for="m in CHAT_MODELS.filter((item) => item.chef === chef)"
                       :key="m.id"
                       :value="m.id"
-                      @select="() => {
-                        modelId = m.id;
-                        modelSelectorOpen = false;
-                      }"
+                      @select="() => selectModel(m.id)"
                     >
                       <ModelSelectorLogo :provider="m.chefSlug" />
                       <ModelSelectorName>{{ m.name }}</ModelSelectorName>

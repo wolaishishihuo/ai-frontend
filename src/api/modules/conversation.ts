@@ -1,4 +1,4 @@
-import type { Conversation } from '../types';
+import type { Conversation, CreateConversationParams } from '../types';
 import type { PaginatedData, PaginationParams } from '@/http/types';
 import { get, post } from '@/http';
 
@@ -20,7 +20,16 @@ export const conversationApi = {
    * @param data 会话数据
    * @returns 创建的会话信息
    */
-  createConversation(data: Conversation): Promise<Conversation> {
-    return post<Conversation>('/api/conversation/create', data);
+  createConversation(data: CreateConversationParams): Promise<string> {
+    return post<string>('/api/conversation/create', data);
+  },
+
+  /**
+   * 获取会话详情
+   * @param id 会话 ID
+   * @returns 会话详情
+   */
+  getConversationById(id: string): Promise<Conversation> {
+    return get<Conversation>(`/api/conversation/detail/${id}`);
   }
 };
