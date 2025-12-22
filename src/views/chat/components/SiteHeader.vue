@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { useDark } from '@vueuse/core';
+import { useDark, useToggle } from '@vueuse/core';
 import { Moon, Sun } from 'lucide-vue-next';
 
-const isDark = useDark();
+const isDark = useDark({
+  // 暗黑class名字
+  valueDark: 'dark',
+  // 高亮class名字
+  valueLight: 'light'
 
-function toggleDark() {
-  isDark.value = !isDark.value;
-}
+});
+
+const toggle = useToggle(isDark);
 </script>
 
 <template>
@@ -23,7 +27,7 @@ function toggleDark() {
         Welcome to AIWeb Chat.
       </h1>
       <div class="ml-auto flex items-center gap-2">
-        <Button variant="ghost" size="icon" @click="toggleDark">
+        <Button variant="ghost" size="icon" @click="toggle()">
           <Sun v-if="isDark" class="size-4!" />
           <Moon v-else class="size-4!" />
         </Button>
