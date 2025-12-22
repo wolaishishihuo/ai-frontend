@@ -5,11 +5,13 @@ import { DefaultChatTransport } from 'ai';
 import { CheckIcon } from 'lucide-vue-next';
 import { type PromptInputMessage, usePromptInputProvider } from '@/components/ai-elements/prompt-input/';
 import { CHAT_MODELS, useConversationStore } from '@/stores/modules/conversation';
+import { useUserStore } from '@/stores/modules/user';
 
 const route = useRoute();
 const router = useRouter();
 const conversationStore = useConversationStore();
 const { modelId, selectedModel, pendingMessage, currentConversation } = storeToRefs(conversationStore);
+const { token } = storeToRefs(useUserStore());
 
 const modelSelectorOpen = ref(false);
 const conversationId = computed(() => route.params.id as string | undefined);
@@ -23,14 +25,19 @@ function createChat(initialMessages?: UIMessage[]) {
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: `${import.meta.env.VITE_API_BASE_URL}/api/chat/generate`,
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
       body: () => ({
         modelType: selectedModel.value?.id,
         conversationId: conversationId.value
       })
-    })
+    }),
+    onFinish: () => {
+      conversationStore.fetchConversationStats();
+    }
   });
 }
-
 // 初始化
 createChat();
 
@@ -129,8 +136,7 @@ defineExpose({
   messages,
   status,
   handleRegenerate,
-  handleStopStream,
-  setTextInput: (text: string) => promptInput.setTextInput(text)
+  handleStopStream
 });
 </script>
 

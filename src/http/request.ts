@@ -51,12 +51,13 @@ instance.interceptors.response.use(
       code: status || 0,
       message
     };
-    toast.error(message);
 
     if (status === HttpStatus.UNAUTHORIZED) {
       const userStore = useUserStore();
       userStore.logout();
     }
+
+    toast.error(message);
 
     return Promise.reject(apiError);
   }

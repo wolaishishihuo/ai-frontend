@@ -20,7 +20,7 @@ watch(
   async (newId) => {
     if (newId) {
       setCurrentConversationId(newId as string);
-      await fetchConversationById(newId as string);
+      await fetchConversationById();
     }
   },
   { immediate: true }

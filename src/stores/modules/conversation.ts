@@ -1,6 +1,7 @@
 import type { Conversation } from '@/api/types/conversation';
+import type { ConversationStats } from '@/api/types/statistics';
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input';
-import { conversationApi } from '@/api';
+import { conversationApi, statisticsApi } from '@/api';
 
 // 模型配置
 export const CHAT_MODELS = [
@@ -33,6 +34,9 @@ export const useConversationStore = defineStore('conversation', () => {
   const pendingMessage = ref<PromptInputMessage | null>(null);
   // 当前选择的模型
   const modelId = ref<ModelId>('deepseek-chat');
+  // 当前会话统计数据
+  const conversationStats = ref<ConversationStats | null>(null);
+  const statsLoading = ref(false);
 
   const selectedModel = computed(() =>
     CHAT_MODELS.find(m => m.id === modelId.value)
@@ -45,8 +49,8 @@ export const useConversationStore = defineStore('conversation', () => {
   }
 
   // 获取会话详情
-  async function fetchConversationById(id: string) {
-    const response = await conversationApi.getConversationById(id);
+  async function fetchConversationById() {
+    const response = await conversationApi.getConversationById(currentConversationId.value!);
     currentConversation.value = response;
     return response;
   }
@@ -84,6 +88,24 @@ export const useConversationStore = defineStore('conversation', () => {
     currentConversationId.value = null;
     currentConversation.value = null;
     pendingMessage.value = null;
+    conversationStats.value = null;
+  }
+
+  // 获取当前会话统计
+  async function fetchConversationStats() {
+    if (!currentConversationId.value)
+      return;
+
+    statsLoading.value = true;
+    try {
+      conversationStats.value = await statisticsApi.getConversationStats(currentConversationId.value);
+    }
+    catch {
+      conversationStats.value = null;
+    }
+    finally {
+      statsLoading.value = false;
+    }
   }
 
   return {
@@ -94,6 +116,8 @@ export const useConversationStore = defineStore('conversation', () => {
     modelId,
     selectedModel,
     pendingMessage,
+    conversationStats,
+    statsLoading,
 
     // 方法
     fetchConversationList,
@@ -102,6 +126,7 @@ export const useConversationStore = defineStore('conversation', () => {
     consumePendingMessage,
     setCurrentConversationId,
     setModel,
-    clearCurrentConversation
+    clearCurrentConversation,
+    fetchConversationStats
   };
 });
