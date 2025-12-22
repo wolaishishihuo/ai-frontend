@@ -25,7 +25,6 @@ function copyToClipboard(text: string) {
 }
 
 function getSourceUrlParts(message: UIMessage) {
-  console.log(message.parts);
   return message.parts.filter(part => part.type === 'source-url');
 }
 

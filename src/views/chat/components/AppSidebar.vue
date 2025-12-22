@@ -4,14 +4,6 @@ import { useUserStore } from '@/stores/modules/user';
 import NavMain from './NavMain.vue';
 import NavUser from './NavUser.vue';
 
-const conversationList = ref<any[]>([
-  {
-    id: '1',
-    title: 'Conversation 1',
-    messages: []
-  }
-]);
-
 const router = useRouter();
 
 const userInfo = computed(() => useUserStore().userInfo);
@@ -34,7 +26,7 @@ function handleNewConversation() {
       </SidebarMenu>
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="conversationList" />
+      <NavMain />
     </SidebarContent>
     <SidebarFooter class="space-y-10">
       <SidebarMenu>

@@ -1,16 +1,19 @@
 <script setup lang="ts">
-interface Conversation {
-  id: string
-  title: string
-  messages: any[]
-}
-
-defineProps<{
-  items: Conversation[]
-}>();
+import { type Conversation, conversationApi } from '@/api';
 
 const route = useRoute();
 const router = useRouter();
+
+const conversations = ref<Conversation[]>([]);
+
+async function getConversations() {
+  const response = await conversationApi.getConversationList();
+  conversations.value = response.list;
+}
+
+onMounted(() => {
+  getConversations();
+});
 
 const selectedId = computed(() => {
   return route.params.id as string | null;
@@ -24,7 +27,7 @@ function handleClick(id: string) {
   <SidebarGroup>
     <SidebarGroupContent class="flex flex-col gap-5">
       <SidebarMenu>
-        <SidebarMenuItem v-for="item in items" :key="item.id">
+        <SidebarMenuItem v-for="item in conversations" :key="item.id">
           <SidebarMenuButton
             :tooltip="item.title"
             :is-active="selectedId === item.id"
