@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { formatRelativeTime } from '@/lib/utils';
+import { formatRelativeTime } from '@/lib/time';
 import { useConversationStore } from '@/stores/modules/conversation';
 import DeleteConversationDialog from '../dialogs/DeleteConversationDialog.vue';
 import EditConversationDialog from '../dialogs/EditConversationDialog.vue';
@@ -91,15 +91,13 @@ function handleEditSuccess() {
   <SidebarGroup>
     <SidebarGroupContent class="flex flex-col gap-5">
       <!-- 搜索框 -->
-      <div class="px-2">
-        <div class="relative">
-          <Search class="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            v-model="searchQuery"
-            placeholder="搜索对话..."
-            class="h-9 pl-8 pr-3"
-          />
-        </div>
+      <div class="relative">
+        <Search class="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          v-model="searchQuery"
+          placeholder="Search conversations..."
+          class="h-9 pl-8 pr-3"
+        />
       </div>
 
       <!-- 对话列表 -->
@@ -145,7 +143,7 @@ function handleEditSuccess() {
         </template>
         <template v-else>
           <div class="px-2 py-8 text-center text-sm text-muted-foreground">
-            {{ searchQuery ? '未找到匹配的对话' : '暂无对话' }}
+            {{ searchQuery ? 'No conversations found' : 'No conversations yet' }}
           </div>
         </template>
       </SidebarMenu>
