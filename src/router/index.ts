@@ -37,8 +37,15 @@ const routes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('@/views/not-found/index.vue'),
+    meta: {
+      title: '页面未找到'
+    }
   }
-
 ];
 
 const router = createRouter({
@@ -54,6 +61,9 @@ router.beforeEach((to, _from, next) => {
     if (isLoggedIn) {
       userStore.resetUserStore();
     }
+    next();
+  }
+  else if (to.name === 'not-found') {
     next();
   }
   else if (!isLoggedIn) {
