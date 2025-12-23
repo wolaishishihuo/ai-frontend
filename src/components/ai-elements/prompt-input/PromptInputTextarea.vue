@@ -16,6 +16,11 @@ const props = defineProps<Props>();
 const { textInput, setTextInput, submitForm, addFiles, files, removeFile } = usePromptInput();
 const isComposing = ref(false);
 
+// 动态 placeholder，包含快捷键提示
+const placeholder = computed(() => {
+  return 'What would you like to know? (Enter to send, Shift+Enter for new line)';
+});
+
 function handleKeyDown(e: KeyboardEvent) {
   if (e.key === 'Enter') {
     if (isComposing.value || e.shiftKey)
@@ -62,7 +67,7 @@ const modelValue = computed({
 <template>
   <InputGroupTextarea
     v-model="modelValue"
-    placeholder="What would you like to know?"
+    :placeholder="placeholder"
     name="message"
     :class="cn('field-sizing-content max-h-48 min-h-16', props.class)"
     v-bind="props"
