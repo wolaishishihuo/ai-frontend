@@ -1,6 +1,6 @@
 import type { Conversation, CreateConversationParams } from '../types';
 import type { PaginatedData, PaginationParams } from '@/http/types';
-import { get, post } from '@/http';
+import { del, get, post } from '@/http';
 
 /**
  * 会话模块 API
@@ -31,5 +31,15 @@ export const conversationApi = {
    */
   getConversationById(id: string): Promise<Conversation> {
     return get<Conversation>(`/api/conversation/detail/${id}`);
+  },
+
+  /**
+   * 删除会话
+   * @param id 会话 ID
+   * @returns 是否删除成功
+   */
+  deleteConversation(id: string): Promise<boolean> {
+    return del<boolean>(`/api/conversation/delete/${id}`);
   }
+
 };

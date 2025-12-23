@@ -108,6 +108,27 @@ export const useConversationStore = defineStore('conversation', () => {
     }
   }
 
+  // 删除会话
+  async function deleteConversation(id: string): Promise<boolean> {
+    try {
+      await conversationApi.deleteConversation(id);
+
+      // 从列表中移除
+      conversations.value = conversations.value.filter(c => c.id !== id);
+
+      // 如果删除的是当前会话，清理状态
+      if (currentConversationId.value === id) {
+        clearCurrentConversation();
+      }
+
+      return true;
+    }
+    catch (error) {
+      console.error('Failed to delete conversation:', error);
+      return false;
+    }
+  }
+
   return {
     // 状态
     conversations,
@@ -127,6 +148,7 @@ export const useConversationStore = defineStore('conversation', () => {
     setCurrentConversationId,
     setModel,
     clearCurrentConversation,
-    fetchConversationStats
+    fetchConversationStats,
+    deleteConversation
   };
 });
