@@ -1,4 +1,4 @@
-import type { Conversation } from '@/api/types/conversation';
+import type { Conversation, UpdateConversationParams } from '@/api/types/conversation';
 import type { ConversationStats } from '@/api/types/statistics';
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input';
 import { conversationApi, statisticsApi } from '@/api';
@@ -109,23 +109,26 @@ export const useConversationStore = defineStore('conversation', () => {
   }
 
   // 删除会话
-  async function deleteConversation(id: string): Promise<boolean> {
-    try {
-      await conversationApi.deleteConversation(id);
+  async function deleteConversation(id: string) {
+    await conversationApi.deleteConversation(id);
 
-      // 从列表中移除
-      conversations.value = conversations.value.filter(c => c.id !== id);
+    // 从列表中移除指定 ID 的会话
+    conversations.value = conversations.value.filter(c => c.id !== id);
 
-      // 如果删除的是当前会话，清理状态
-      if (currentConversationId.value === id) {
-        clearCurrentConversation();
-      }
-
-      return true;
+    // 如果删除的是当前会话，清理状态
+    if (currentConversationId.value === id) {
+      clearCurrentConversation();
     }
-    catch (error) {
-      console.error('Failed to delete conversation:', error);
-      return false;
+  }
+
+  // 更新会话
+  async function updateConversation(id: string, params: UpdateConversationParams) {
+    await conversationApi.updateConversation(id, params);
+    await fetchConversationList();
+
+    // 如果是当前会话，也更新当前会话
+    if (currentConversation.value && currentConversation.value.id === id) {
+      currentConversation.value.title = params.title;
     }
   }
 
@@ -149,6 +152,7 @@ export const useConversationStore = defineStore('conversation', () => {
     setModel,
     clearCurrentConversation,
     fetchConversationStats,
-    deleteConversation
+    deleteConversation,
+    updateConversation
   };
 });

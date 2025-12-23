@@ -4,7 +4,7 @@ import { useClipboard } from '@vueuse/core';
 import { CopyIcon, RefreshCcwIcon } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 import { useConversationStore } from '@/stores/modules/conversation';
-import ChatPromptInput from './components/ChatPromptInput.vue';
+import ChatPromptInput from './ChatPromptInput.vue';
 
 const { copy } = useClipboard();
 const route = useRoute();

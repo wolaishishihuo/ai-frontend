@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core';
 import { toast } from 'vue-sonner';
 import { useConversationStore } from '@/stores/modules/conversation';
 import { useUserStore } from '@/stores/modules/user';
-import ChatPromptInput from './components/ChatPromptInput.vue';
+import ChatPromptInput from './ChatPromptInput.vue';
 
 const { userInfo } = storeToRefs(useUserStore());
 const { clearCurrentConversation } = useConversationStore();

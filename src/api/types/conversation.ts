@@ -30,3 +30,10 @@ export interface CreateConversationParams {
   title: string
   description?: string
 }
+
+/**
+ * 更新会话参数
+ */
+export interface UpdateConversationParams {
+  title: string
+}

@@ -4,8 +4,8 @@ import {
   SidebarProvider
 } from '@/components/ui/sidebar';
 import { useUserStore } from '@/stores/modules/user';
-import AppSidebar from './components/AppSidebar.vue';
-import SiteHeader from './components/SiteHeader.vue';
+import SiteHeader from './layout/SiteHeader.vue';
+import AppSidebar from './sidebar/AppSidebar.vue';
 
 const { getUserInfo } = useUserStore();
 

@@ -115,11 +115,11 @@ npx shadcn-vue@latest add input
 ```vue
 <script setup lang="ts">
 // 无需 import { ref, computed } from 'vue'
-const count = ref(0)
-const double = computed(() => count.value * 2)
+const count = ref(0);
+const double = computed(() => count.value * 2);
 
 // 无需 import { useRouter } from 'vue-router'
-const router = useRouter()
+const router = useRouter();
 </script>
 ```
 

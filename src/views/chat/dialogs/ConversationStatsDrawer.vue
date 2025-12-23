@@ -94,7 +94,7 @@ function formatTokens(tokens: number) {
 }
 
 function formatCost(cost: number) {
-  return `$${cost.toFixed(6)}`;
+  return `${cost.toFixed(6)}`;
 }
 </script>
 

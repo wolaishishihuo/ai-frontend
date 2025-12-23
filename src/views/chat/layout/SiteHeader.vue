@@ -2,7 +2,7 @@
 import { useDark, useToggle } from '@vueuse/core';
 import { Moon, Sun, Zap } from 'lucide-vue-next';
 import { useConversationStore } from '@/stores/modules/conversation';
-import ConversationStatsDrawer from './ConversationStatsDrawer.vue';
+import ConversationStatsDrawer from '../dialogs/ConversationStatsDrawer.vue';
 
 const isDark = useDark({
   valueDark: 'dark',

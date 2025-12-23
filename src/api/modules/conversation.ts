@@ -1,4 +1,4 @@
-import type { Conversation, CreateConversationParams } from '../types';
+import type { Conversation, CreateConversationParams, UpdateConversationParams } from '../types';
 import type { PaginatedData, PaginationParams } from '@/http/types';
 import { del, get, post } from '@/http';
 
@@ -40,6 +40,16 @@ export const conversationApi = {
    */
   deleteConversation(id: string): Promise<boolean> {
     return del<boolean>(`/api/conversation/delete/${id}`);
+  },
+
+  /**
+   * 更新会话
+   * @param id 会话 ID
+   * @param data 更新数据
+   * @returns 是否更新成功
+   */
+  updateConversation(id: string, data: UpdateConversationParams): Promise<boolean> {
+    return post<boolean>(`/api/conversation/update/${id}`, data);
   }
 
 };
