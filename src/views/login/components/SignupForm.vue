@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import { userApi } from '@/api/modules/user';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -20,6 +21,7 @@ import { useUserStore } from '@/stores/modules/user';
 import {
   type FormErrors,
   type SignupFormData,
+  validateCaptcha,
   validateConfirmPassword,
   validateEmail,
   validatePassword,
@@ -33,11 +35,54 @@ const form = reactive<SignupFormData>({
   username: '',
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  captcha: ''
 });
 
 const isLoading = ref(false);
+const isSendingCaptcha = ref(false);
+const countdown = ref(0);
 const errors = ref<FormErrors>({});
+
+let countdownTimer: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * 开始倒计时
+ */
+function startCountdown() {
+  countdown.value = 60;
+  countdownTimer = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+    }
+  }, 1000);
+}
+
+/**
+ * 发送验证码
+ */
+async function handleSendCaptcha() {
+  // 先校验邮箱
+  if (!validateEmail(form.email, errors.value)) {
+    return;
+  }
+
+  try {
+    isSendingCaptcha.value = true;
+    await userApi.sendCaptcha({ email: form.email });
+    startCountdown();
+  }
+  catch (error: any) {
+    errors.value.email = error.message || 'Failed to send verification code';
+  }
+  finally {
+    isSendingCaptcha.value = false;
+  }
+}
 
 /**
  * 校验所有字段
@@ -56,10 +101,9 @@ async function handleSubmit() {
     await signup({
       username: form.username,
       email: form.email,
-      password: form.password
+      password: form.password,
+      captcha: form.captcha
     });
-    // 注册成功，跳转到首页或聊天页
-    // router.push('/chat')
   }
   catch (error: any) {
     errors.value.email = error.message || 'registration failed, please check your input information';
@@ -113,6 +157,37 @@ async function handleSubmit() {
             <FieldDescription>
               We'll use this to contact you. We will not share your email with
               anyone else.
+            </FieldDescription>
+          </Field>
+          <Field :data-invalid="!!errors.captcha">
+            <FieldLabel for="captcha">
+              Verification Code
+            </FieldLabel>
+            <div class="flex gap-2">
+              <Input
+                id="captcha"
+                v-model="form.captcha"
+                type="text"
+                placeholder="Enter 6-digit code"
+                maxlength="6"
+                class="flex-1"
+                @blur="() => validateCaptcha(form.captcha, errors)"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                :disabled="isSendingCaptcha || countdown > 0 || !form.email"
+                class="shrink-0"
+                @click="handleSendCaptcha"
+              >
+                {{ countdown > 0 ? `${countdown}s` : (isSendingCaptcha ? 'Sending...' : 'Send Code') }}
+              </Button>
+            </div>
+            <FieldError v-if="errors.captcha">
+              {{ errors.captcha }}
+            </FieldError>
+            <FieldDescription>
+              Enter the 6-digit code sent to your email. Valid for 5 minutes.
             </FieldDescription>
           </Field>
           <Field :data-invalid="!!errors.password">

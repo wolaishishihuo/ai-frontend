@@ -29,6 +29,21 @@ export interface RegisterParams {
   username: string
   password: string
   email: string
+  captcha: string
+}
+
+/**
+ * 发送验证码请求参数
+ */
+export interface SendCaptchaParams {
+  email: string
+}
+
+/**
+ * 发送验证码响应
+ */
+export interface SendCaptchaResponse {
+  success: boolean
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { GetUserListParams, LoginParams, LoginResponse, RegisterParams, UpdateUserParams, User } from '../types/user';
+import type { GetUserListParams, LoginParams, LoginResponse, RegisterParams, SendCaptchaParams, SendCaptchaResponse, UpdateUserParams, User } from '../types/user';
 import type { PaginatedData } from '@/http/types';
 import { del, get, patch, post } from '@/http';
 
@@ -67,5 +67,14 @@ export const userApi = {
    */
   deleteUser(id: string): Promise<User> {
     return del<User>(`/api/user/${id}`);
+  },
+
+  /**
+   * 发送邮箱验证码
+   * @param data 包含邮箱地址
+   * @returns 发送结果
+   */
+  sendCaptcha(data: SendCaptchaParams): Promise<SendCaptchaResponse> {
+    return post<SendCaptchaResponse>('/api/email/send', data, { skipAuth: true });
   }
 };

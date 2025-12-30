@@ -18,6 +18,7 @@ export interface SignupFormData {
   email: string
   password: string
   confirmPassword?: string
+  captcha: string
 }
 
 /**
@@ -28,6 +29,7 @@ export interface FormErrors {
   email?: string
   password?: string
   confirmPassword?: string
+  captcha?: string
 }
 
 /**
@@ -104,6 +106,25 @@ export function validateConfirmPassword(
 }
 
 /**
+ * 校验验证码
+ */
+export function validateCaptcha(
+  captcha: string,
+  errors: FormErrors
+): boolean {
+  if (!captcha) {
+    errors.captcha = 'please enter the verification code';
+    return false;
+  }
+  if (!/^\d{6}$/.test(captcha)) {
+    errors.captcha = 'verification code must be 6 digits';
+    return false;
+  }
+  delete errors.captcha;
+  return true;
+}
+
+/**
  * 校验登录表单
  */
 export function validateLoginForm(
@@ -131,6 +152,7 @@ export function validateSignupForm(
     form.password,
     errors
   );
+  const captchaValid = validateCaptcha(form.captcha, errors);
 
-  return usernameValid && emailValid && passwordValid && confirmPasswordValid;
+  return usernameValid && emailValid && passwordValid && confirmPasswordValid && captchaValid;
 }
